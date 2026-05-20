@@ -1,0 +1,200 @@
+/*
+ * emissions-extra.css — Bloco 5
+ *
+ * Estilos adicionais para o projeto de monitoramento de terminal de ônibus.
+ * Adicione no layout.html: <link rel="stylesheet" th:href="@{/css/emissions-extra.css}">
+ *
+ * Não reinventa: complementa o CSS existente em /static/css/.
+ */
+
+/* ═══════════════════════════════════════════════════════════
+   BADGES DE ALERTA (verde / amarelo / vermelho)
+   Uso: <span class="alert-badge badge-ok">✓ Normal</span>
+═══════════════════════════════════════════════════════════ */
+.alert-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    white-space: nowrap;
+}
+
+/* Verde — dentro do limite */
+.badge-ok {
+    background: rgba(34, 197, 94, 0.10);
+    color: #4ade80;
+    border: 1px solid rgba(34, 197, 94, 0.30);
+}
+
+/* Amarelo — atenção (entre 80% e 100% do limite) */
+.badge-warn {
+    background: rgba(245, 158, 11, 0.12);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.35);
+}
+
+/* Vermelho — acima do limite */
+.badge-danger {
+    background: rgba(239, 68, 68, 0.12);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.35);
+}
+
+/* Piscante para crítico */
+.badge-critical {
+    background: rgba(220, 38, 38, 0.18);
+    color: #fca5a5;
+    border: 1px solid rgba(220, 38, 38, 0.45);
+    animation: badgePulse 1.5s ease infinite;
+}
+
+@keyframes badgePulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.6; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   BADGE DE PADRÃO DO MOTOR (P5 / P7 / P8)
+═══════════════════════════════════════════════════════════ */
+.padrao-badge {
+    display: inline-block;
+    padding: 1px 8px;
+    border-radius: 4px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    font-family: var(--font-mono, monospace);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+
+/* P5/Euro III — mais poluente → vermelho */
+.padrao-p5 {
+    background: rgba(239, 68, 68, 0.12);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.35);
+}
+
+/* P7/Euro V — intermediário → amarelo */
+.padrao-p7 {
+    background: rgba(245, 158, 11, 0.12);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.35);
+}
+
+/* P8/Euro VI ou elétrico — mais limpo → verde */
+.padrao-p8,
+.padrao-eletrico {
+    background: rgba(34, 197, 94, 0.10);
+    color: #4ade80;
+    border: 1px solid rgba(34, 197, 94, 0.30);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SELECT PEQUENO (filtro de terminal no cabeçalho)
+═══════════════════════════════════════════════════════════ */
+.select-sm {
+    background: var(--bg-card2, #1a2820);
+    border: 1px solid var(--border, #1e3027);
+    color: var(--text, #e5e7eb);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 0.82rem;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.15s;
+}
+
+.select-sm:hover,
+.select-sm:focus {
+    border-color: var(--border-light, #22c55e);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LINHA DE TEXTO: verde (ok) / vermelho (danger)
+═══════════════════════════════════════════════════════════ */
+.text-ok     { color: #4ade80 !important; }
+.text-danger { color: #f87171 !important; }
+.text-warn   { color: #fbbf24 !important; }
+
+/* ═══════════════════════════════════════════════════════════
+   MINI KPI ROW (detalhes do ônibus)
+═══════════════════════════════════════════════════════════ */
+.mini-kpi-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.mini-kpi {
+    background: var(--bg-card, #131f17);
+    border: 1px solid var(--border, #1e3027);
+    border-radius: var(--radius, 10px);
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 140px;
+    flex: 1;
+}
+
+.mini-kpi-label {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-dim, #6b7280);
+    font-weight: 600;
+}
+
+.mini-kpi-val {
+    font-size: 1.2rem;
+    font-weight: 800;
+    font-family: var(--font-mono, monospace);
+    color: var(--text, #e5e7eb);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CABEÇALHO DO DETALHE DO ÔNIBUS
+═══════════════════════════════════════════════════════════ */
+.station-detail-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.station-detail-info .station-code {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--accent-green, #22c55e);
+    background: rgba(34,197,94,0.08);
+    border: 1px solid rgba(34,197,94,0.2);
+    border-radius: 4px;
+    padding: 2px 8px;
+    margin-bottom: 6px;
+    display: inline-block;
+}
+
+.station-detail-info h2 {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--text, #e5e7eb);
+    margin: 4px 0;
+}
+
+.station-detail-info p {
+    font-size: 0.84rem;
+    color: var(--text-muted, #9ca3af);
+}
+
+.status-lg {
+    font-size: 0.9rem !important;
+    padding: 6px 16px !important;
+}

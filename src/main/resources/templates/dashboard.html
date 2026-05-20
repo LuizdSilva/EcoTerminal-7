@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::content}, ~{::scriptsExtra})}">
+<head><title>Dashboard — Monitoramento de Emissões</title></head>
+<body>
+
+<th:block th:fragment="content">
+
+    <!-- Cabeçalho ──────────────────────────────────────────────────────── -->
+    <div class="page-header">
+        <div class="header-text">
+            <h2>Dashboard</h2>
+            <p>Visão geral do monitoramento de emissões.</p>
+        </div>
+    </div>
+
+    <!-- KPI Cards (3 principais + extras) ─────────────────────────────── -->
+    <div class="kpi-grid">
+
+        <!-- Card 1: CO2 total hoje -->
+        <div class="kpi-card">
+            <span class="kpi-label">Total CO₂ Hoje</span>
+            <span class="kpi-value" th:text="${kpis.co2TotalHoje}">0.00</span>
+            <span class="kpi-unit">ppm acumulados</span>
+        </div>
+
+        <!-- Card 2: Alertas ativos -->
+        <div class="kpi-card" th:classappend="${kpis.alertasAtivos > 0} ? 'danger' : 'ok'">
+            <span class="kpi-label">Alertas Ativos</span>
+            <span class="kpi-value" th:text="${kpis.alertasAtivos}">0</span>
+            <span class="kpi-unit">não resolvidos</span>
+        </div>
+
+        <!-- Card 3: Ônibus monitorados -->
+        <div class="kpi-card ok">
+            <span class="kpi-label">Ônibus Monitorados</span>
+            <span class="kpi-value" th:text="${kpis.totalOnibus}">0</span>
+            <span class="kpi-unit">em <span th:text="${kpis.totalTerminais}">0</span> terminais</span>
+        </div>
+
+        <!-- Card 4: CO2 médio 24h -->
+        <div class="kpi-card">
+            <span class="kpi-label">CO₂ Médio 24h</span>
+            <span class="kpi-value" th:text="${kpis.co2Medio24h}">0.0</span>
+            <span class="kpi-unit">ppm</span>
+        </div>
+
+        <!-- Card 5: Leituras hoje -->
+        <div class="kpi-card">
+            <span class="kpi-label">Leituras Hoje</span>
+            <span class="kpi-value" th:text="${kpis.leiturasHoje}">0</span>
+            <span class="kpi-unit">registros</span>
+        </div>
+
+        <!-- Card 6: Terminais -->
+        <div class="kpi-card ok">
+            <span class="kpi-label">Terminais</span>
+            <span class="kpi-value" th:text="${kpis.totalTerminais}">0</span>
+            <span class="kpi-unit">monitorados</span>
+        </div>
+
+    </div>
+
+    <!-- Gráficos ────────────────────────────────────────────────────────── -->
+    <div class="charts-grid">
+
+        <!-- Gráfico 1: Emissões CO₂ por hora (linha) — Bloco 5 -->
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3>Emissões CO₂ por Hora — Hoje</h3>
+                <span class="chart-badge">ppm</span>
+            </div>
+            <div class="chart-body">
+                <canvas id="co2HoraChart" height="120"></canvas>
+            </div>
+        </div>
+
+        <!-- Gráfico 2: Comparativo por terminal -->
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3>CO₂ por Terminal</h3>
+                <span class="chart-badge">últimas 24h</span>
+            </div>
+            <div class="chart-body">
+                <canvas id="terminalChart" height="120"></canvas>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Tabela: Status dos ônibus ──────────────────────────────────────── -->
+    <div class="table-card" th:if="${not #lists.isEmpty(statusOnibus)}">
+        <div class="table-card-header">
+            <h3>Status da Frota</h3>
+            <a th:href="@{/onibus}" class="btn-outline" style="font-size:0.8rem">Ver todos</a>
+        </div>
+        <table class="data-table">
+            <thead>
+            <tr>
+                <th>Placa</th>
+                <th>Tipo</th>
+                <th>Padrão</th>
+                <th>Terminal</th>
+                <th>Último CO₂</th>
+                <th>Última Leitura</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="s : ${statusOnibus}">
+                <td class="font-mono" th:text="${s.placa}">ABC-1234</td>
+                <td th:text="${s.tipo}">PADRON</td>
+                <td>
+                    <span class="status-badge"
+                          th:classappend="${s.padrao != null and s.padrao.toString().contains('P8')} ? 'badge-online' :
+                                         (${s.padrao != null and s.padrao.toString().contains('P7')} ? 'badge-maintenance' : 'badge-offline')"
+                          th:text="${s.padrao}">P7</span>
+                </td>
+                <td th:text="${s.terminal}">Terminal Central</td>
+                <td th:text="${s.ultimoCo2 != null} ? ${s.ultimoCo2} + ' ppm' : '—'">—</td>
+                <td th:text="${s.ultimaLeitura != null}
+                              ? ${#temporals.format(s.ultimaLeitura, 'dd/MM HH:mm')} : '—'">—</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Tabela: Leituras recentes ──────────────────────────────────────── -->
+    <div class="table-card" th:if="${not #lists.isEmpty(leiturasRecentes)}"
+         style="margin-top:20px">
+        <div class="table-card-header">
+            <h3>Leituras Recentes (últimas 24h)</h3>
+            <a th:href="@{/leituras}" class="btn-outline" style="font-size:0.8rem">Ver todas</a>
+        </div>
+        <table class="data-table">
+            <thead>
+            <tr>
+                <th>Data/Hora</th>
+                <th>Ônibus</th>
+                <th>Terminal</th>
+                <th>KM Percorridos</th>
+                <th>NOx (ppm)</th>
+                <th>MP (mg/m³)</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="l : ${leiturasRecentes}">
+                <td th:text="${#temporals.format(l.dataHora, 'dd/MM/yyyy HH:mm')}">—</td>
+                <td class="font-mono"
+                    th:text="${l.onibus != null} ? ${l.onibus.prefixo} : '—'">ABC-1234</td>
+                <td th:text="${l.onibus != null and l.onibus.terminal != null}
+                              ? ${l.onibus.terminal.nome} : '—'">Terminal Norte</td>
+                <td th:text="${#numbers.formatDecimal(l.kmPercorridos, 1, 1)} + ' km'">0.0 km</td>
+                <td th:text="${l.noxPpm != null} ? ${#numbers.formatDecimal(l.noxPpm, 1, 2)} : '—'">—</td>
+                <td th:text="${l.mpMgM3 != null} ? ${#numbers.formatDecimal(l.mpMgM3, 1, 3)} : '—'">—</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</th:block>
+
+<!-- Scripts Bloco 5 ──────────────────────────────────────────────────── -->
+<th:block th:fragment="scriptsExtra">
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const co2PorHora = /*[[${co2PorHora}]]*/ {};
+        /*]]>*/
+    </script>
+    <script src="/js/dashboard.js"></script>
+</th:block>
+
+</body>
+</html>

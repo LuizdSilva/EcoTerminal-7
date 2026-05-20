@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::content}, ~{::scriptsExtra})}">
+<head><title>Ônibus Monitorados</title></head>
+<body>
+<th:block th:fragment="content">
+
+    <div class="page-header">
+        <div class="header-text">
+            <h2>Ônibus Monitorados</h2>
+            <p>Gerencie a frota cadastrada e visualize as emissões por veículo.</p>
+        </div>
+        <div class="header-actions">
+            <!-- Filtro por terminal -->
+            <form th:action="@{/onibus}" method="get" style="display:inline-flex;gap:8px;align-items:center">
+                <select name="terminalId" class="select-sm"
+                        onchange="this.form.submit()">
+                    <option value="">Todos os terminais</option>
+                    <option th:each="t : ${terminais}"
+                            th:value="${t.id}"
+                            th:text="${t.nome}"
+                            th:selected="${terminal != null and terminal.id == t.id}">
+                        Terminal
+                    </option>
+                </select>
+            </form>
+            <a th:href="@{/onibus/novo}" class="btn-primary">+ Novo Ônibus</a>
+        </div>
+    </div>
+
+    <div class="table-card">
+        <table class="data-table">
+            <thead>
+            <tr>
+                <th>Placa</th>
+                <th>Tipo</th>
+                <th>Padrão Motor</th>
+                <th>Combustível</th>
+                <th>km/dia</th>
+                <th>Terminal</th>
+                <th>Ações</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="o : ${onibus}">
+                <td class="font-mono" th:text="${o.prefixo}">ABC-1234</td>
+                <td th:text="${o.tipo}">PADRON</td>
+                <td>
+                    <span class="status-badge"
+                          th:classappend="${o.padraoMotor != null and o.padraoMotor.name().contains('P8')}  ? 'badge-online' :
+                                         (${o.padraoMotor != null and o.padraoMotor.name().contains('P7')} ? 'badge-maintenance' : 'badge-offline')"
+                          th:text="${o.padraoMotor != null} ? ${o.padraoMotor} : '-'">P7</span>
+                </td>
+                <td th:text="${o.combustivel != null} ? ${o.combustivel} : '-'">DIESEL_B15</td>
+                <td th:text="${o.kmAnuais}">250</td>
+                <td th:text="${o.terminal != null} ? ${o.terminal.nome} : '—'">Terminal Central</td>
+                <td class="table-actions">
+                    <a th:href="@{/onibus/{id}(id=${o.id})}"      class="btn-icon" title="Ver Detalhes">📊</a>
+                    <a th:href="@{/onibus/editar/{id}(id=${o.id})}" class="btn-icon" title="Editar">✏️</a>
+                    <form th:action="@{/onibus/excluir/{id}(id=${o.id})}" method="post"
+                          style="display:inline"
+                          onsubmit="return confirm('Excluir este ônibus?')">
+                        <button type="submit" class="btn-icon text-danger">🗑️</button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(onibus)}">
+                <td colspan="7" style="text-align:center;padding:40px;color:var(--text-dim)">
+                    Nenhum ônibus cadastrado. Clique em "Novo Ônibus" para começar.
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Resumo de terminais ─────────────────────────────────────────────── -->
+    <div class="table-card" th:if="${not #lists.isEmpty(terminais)}" style="margin-top:20px">
+        <div class="table-card-header">
+            <h3>Terminais Cadastrados</h3>
+            <a th:href="@{/terminais/novo}" class="btn-outline" style="font-size:0.8rem">+ Novo Terminal</a>
+        </div>
+        <table class="data-table">
+            <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Código</th>
+                <th>Cidade</th>
+                <th>Ações</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="t : ${terminais}">
+                <td><strong th:text="${t.nome}">Terminal Norte</strong></td>
+                <td class="font-mono" th:text="${t.codigo}">TBF-01</td>
+                <td th:text="${t.cidade} + ', ' + ${t.estado}">São Paulo, SP</td>
+                <td class="table-actions">
+                    <a th:href="@{/terminais/{id}/emissoes(id=${t.id})}" class="btn-icon" title="Ver Emissões">📈</a>
+                    <a th:href="@{/terminais/editar/{id}(id=${t.id})}"   class="btn-icon" title="Editar">✏️</a>
+                    <form th:action="@{/terminais/excluir/{id}(id=${t.id})}" method="post"
+                          style="display:inline"
+                          onsubmit="return confirm('Excluir este terminal?')">
+                        <button type="submit" class="btn-icon text-danger">🗑️</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</th:block>
+<th:block th:fragment="scriptsExtra"></th:block>
+</body>
+</html>

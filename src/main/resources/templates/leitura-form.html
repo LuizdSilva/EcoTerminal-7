@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::content}, ~{::scriptsExtra})}">
+<head><title>Registrar Leitura</title></head>
+<body>
+
+<th:block th:fragment="content">
+
+    <div class="page-header">
+        <div class="header-text">
+            <h2>Registrar Leitura de CO₂</h2>
+            <p>Informe os dados da medição de emissões do veículo.</p>
+        </div>
+    </div>
+
+    <div class="table-card" style="padding:28px 32px;max-width:700px">
+        <form th:action="@{/leituras/nova}" method="post">
+
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+
+                <!-- Ônibus -->
+                <div style="grid-column:1/-1;display:flex;flex-direction:column;gap:6px">
+                    <label style="font-size:0.72rem;font-family:var(--font-mono);text-transform:uppercase;
+                                  letter-spacing:1px;color:var(--text-dim)">Ônibus</label>
+                    <select name="onibusId" required class="select-sm" style="width:100%;padding:9px 12px">
+                        <option value="">Selecione o ônibus...</option>
+                        <option th:each="o : ${onibus}"
+                                th:value="${o.id}"
+                                th:text="${o.prefixo} + ' — ' + ${o.terminal != null ? o.terminal.nome : '?'}">
+                        </option>
+                    </select>
+                </div>
+
+                <!-- Data/Hora -->
+                <div style="grid-column:1/-1;display:flex;flex-direction:column;gap:6px">
+                    <label style="font-size:0.72rem;font-family:var(--font-mono);text-transform:uppercase;
+                                  letter-spacing:1px;color:var(--text-dim)">Data e Hora (deixe em branco para agora)</label>
+                    <input type="datetime-local" name="dataHora"
+                           style="background:var(--bg-card2);border:1px solid var(--border);border-radius:8px;
+                                  padding:9px 12px;color:var(--text);font-family:var(--font-mono);font-size:0.85rem;width:100%"/>
+                </div>
+
+                <!-- KM Percorridos -->
+                <div style="display:flex;flex-direction:column;gap:6px">
+                    <label style="font-size:0.72rem;font-family:var(--font-mono);text-transform:uppercase;
+                                  letter-spacing:1px;color:var(--text-dim)">KM Percorridos</label>
+                    <input type="number" name="kmPercorridos" step="0.1" min="0"
+                           placeholder="Ex: 250.5" required
+                           style="background:var(--bg-card2);border:1px solid var(--border);border-radius:8px;
+                                  padding:9px 12px;color:var(--text);font-family:var(--font-mono);font-size:0.85rem;width:100%"/>
+                </div>
+
+                <!-- Combustível (litros) -->
+                <div style="display:flex;flex-direction:column;gap:6px">
+                    <label style="font-size:0.72rem;font-family:var(--font-mono);text-transform:uppercase;
+                                  letter-spacing:1px;color:var(--text-dim)">Combustível (litros)</label>
+                    <input type="number" name="combustivelLitros" step="0.01" min="0"
+                           placeholder="Ex: 85.00"
+                           style="background:var(--bg-card2);border:1px solid var(--border);border-radius:8px;
+                                  padding:9px 12px;color:var(--text);font-family:var(--font-mono);font-size:0.85rem;width:100%"/>
+                </div>
+
+                <!-- NOx (ppm) -->
+                <div style="display:flex;flex-direction:column;gap:6px">
+                    <label style="font-size:0.72rem;font-family:var(--font-mono);text-transform:uppercase;
+                                  letter-spacing:1px;color:var(--text-dim)">NOx (ppm)</label>
+                    <input type="number" name="noxPpm" step="0.01" min="0"
+                           placeholder="Ex: 4.50"
+                           style="background:var(--bg-card2);border:1px solid var(--border);border-radius:8px;
+                                  padding:9px 12px;color:var(--text);font-family:var(--font-mono);font-size:0.85rem;width:100%"/>
+                </div>
+
+                <!-- MP (mg/m³) -->
+                <div style="display:flex;flex-direction:column;gap:6px">
+                    <label style="font-size:0.72rem;font-family:var(--font-mono);text-transform:uppercase;
+                                  letter-spacing:1px;color:var(--text-dim)">Material Particulado (mg/m³)</label>
+                    <input type="number" name="mpMgM3" step="0.001" min="0"
+                           placeholder="Ex: 0.025"
+                           style="background:var(--bg-card2);border:1px solid var(--border);border-radius:8px;
+                                  padding:9px 12px;color:var(--text);font-family:var(--font-mono);font-size:0.85rem;width:100%"/>
+                </div>
+
+                <!-- Temperatura -->
+                <div style="display:flex;flex-direction:column;gap:6px">
+                    <label style="font-size:0.72rem;font-family:var(--font-mono);text-transform:uppercase;
+                                  letter-spacing:1px;color:var(--text-dim)">Temperatura Ar Admissão (°C)</label>
+                    <input type="number" name="temperaturaArAdmissao" step="0.1"
+                           placeholder="Ex: 25.0"
+                           style="background:var(--bg-card2);border:1px solid var(--border);border-radius:8px;
+                                  padding:9px 12px;color:var(--text);font-family:var(--font-mono);font-size:0.85rem;width:100%"/>
+                </div>
+
+                <!-- Umidade -->
+                <div style="display:flex;flex-direction:column;gap:6px">
+                    <label style="font-size:0.72rem;font-family:var(--font-mono);text-transform:uppercase;
+                                  letter-spacing:1px;color:var(--text-dim)">Umidade Absoluta do Ar (g/m³)</label>
+                    <input type="number" name="umidadeAbsolutaAr" step="0.01" min="0"
+                           placeholder="Ex: 12.5"
+                           style="background:var(--bg-card2);border:1px solid var(--border);border-radius:8px;
+                                  padding:9px 12px;color:var(--text);font-family:var(--font-mono);font-size:0.85rem;width:100%"/>
+                </div>
+
+                <!-- Observações -->
+                <div style="grid-column:1/-1;display:flex;flex-direction:column;gap:6px">
+                    <label style="font-size:0.72rem;font-family:var(--font-mono);text-transform:uppercase;
+                                  letter-spacing:1px;color:var(--text-dim)">Observações</label>
+                    <textarea name="observacoes" rows="3"
+                              placeholder="Anotações adicionais sobre a medição..."
+                              style="background:var(--bg-card2);border:1px solid var(--border);border-radius:8px;
+                                     padding:9px 12px;color:var(--text);font-size:0.84rem;width:100%;
+                                     resize:vertical;font-family:var(--font)"></textarea>
+                </div>
+
+            </div>
+
+            <div style="display:flex;gap:12px;margin-top:28px">
+                <button type="submit" class="btn-primary">Registrar Leitura</button>
+                <a th:href="@{/leituras}" class="btn-outline">Cancelar</a>
+            </div>
+        </form>
+    </div>
+
+</th:block>
+<th:block th:fragment="scriptsExtra"></th:block>
+</body>
+</html>

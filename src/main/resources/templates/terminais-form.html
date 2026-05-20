@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::content}, ~{::scriptsExtra})}">
+<head><title>Terminal — Formulário</title></head>
+<body>
+
+<th:block th:fragment="content">
+
+    <div class="page-header">
+        <div class="header-text">
+            <h2 th:text="${terminal.id != null} ? 'Editar Terminal' : 'Novo Terminal'">Terminal</h2>
+            <p>Preencha os dados do terminal abaixo.</p>
+        </div>
+    </div>
+
+    <div class="table-card" style="padding:28px 32px;max-width:600px">
+        <form th:action="${terminal.id != null}
+                          ? @{/terminais/editar/{id}(id=${terminal.id})}
+                          : @{/terminais/novo}"
+              method="post">
+
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+            <div style="display:flex;flex-direction:column;gap:18px">
+
+                <!-- Nome -->
+                <div style="display:flex;flex-direction:column;gap:6px">
+                    <label style="font-size:0.72rem;font-family:var(--font-mono);text-transform:uppercase;
+                                  letter-spacing:1px;color:var(--text-dim)">Nome do Terminal</label>
+                    <input type="text" name="nome"
+                           th:value="${terminal.nome}"
+                           placeholder="Ex: Terminal Barra Funda"
+                           required
+                           style="background:var(--bg-card2);border:1px solid var(--border);border-radius:8px;
+                                  padding:9px 12px;color:var(--text);font-size:0.85rem;width:100%"/>
+                </div>
+
+                <!-- Código -->
+                <div style="display:flex;flex-direction:column;gap:6px">
+                    <label style="font-size:0.72rem;font-family:var(--font-mono);text-transform:uppercase;
+                                  letter-spacing:1px;color:var(--text-dim)">Código</label>
+                    <input type="text" name="codigo"
+                           th:value="${terminal.codigo}"
+                           placeholder="Ex: TBF-01"
+                           style="background:var(--bg-card2);border:1px solid var(--border);border-radius:8px;
+                                  padding:9px 12px;color:var(--text);font-family:var(--font-mono);font-size:0.85rem;width:100%"/>
+                </div>
+
+                <!-- Cidade -->
+                <div style="display:flex;flex-direction:column;gap:6px">
+                    <label style="font-size:0.72rem;font-family:var(--font-mono);text-transform:uppercase;
+                                  letter-spacing:1px;color:var(--text-dim)">Cidade</label>
+                    <input type="text" name="cidade"
+                           th:value="${terminal.cidade}"
+                           placeholder="Ex: São Paulo"
+                           style="background:var(--bg-card2);border:1px solid var(--border);border-radius:8px;
+                                  padding:9px 12px;color:var(--text);font-size:0.85rem;width:100%"/>
+                </div>
+
+                <!-- Estado -->
+                <div style="display:flex;flex-direction:column;gap:6px">
+                    <label style="font-size:0.72rem;font-family:var(--font-mono);text-transform:uppercase;
+                                  letter-spacing:1px;color:var(--text-dim)">Estado (UF)</label>
+                    <input type="text" name="estado"
+                           th:value="${terminal.estado}"
+                           placeholder="Ex: SP"
+                           maxlength="2"
+                           style="background:var(--bg-card2);border:1px solid var(--border);border-radius:8px;
+                                  padding:9px 12px;color:var(--text);font-family:var(--font-mono);
+                                  font-size:0.85rem;width:80px;text-transform:uppercase"/>
+                </div>
+
+            </div>
+
+            <div style="display:flex;gap:12px;margin-top:28px">
+                <button type="submit" class="btn-primary">
+                    <span th:text="${terminal.id != null} ? 'Salvar Alterações' : 'Cadastrar Terminal'">Salvar</span>
+                </button>
+                <a th:href="@{/terminais}" class="btn-outline">Cancelar</a>
+            </div>
+        </form>
+    </div>
+
+</th:block>
+<th:block th:fragment="scriptsExtra"></th:block>
+</body>
+</html>

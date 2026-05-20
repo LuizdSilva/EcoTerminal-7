@@ -1,0 +1,7 @@
+# Ignorar arquivos compilados do Java
+*.class
+bin/
+target/
+
+# Ignorar configurações locais do VS Code
+.vscode/

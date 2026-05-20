@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::content}, ~{::scriptsExtra})}">
+<head><title>Detalhe Ônibus</title></head>
+<body>
+<th:block th:fragment="content">
+
+    <!-- Cabeçalho do ônibus ────────────────────────────────────────────── -->
+    <div class="station-detail-header">
+        <div class="station-detail-info">
+            <span class="station-code" th:text="${onibus.placa}">ABC-1234</span>
+            <h2 th:text="${onibus.tipo}">PADRON</h2>
+            <p>🏢 Terminal:
+                <span th:text="${onibus.terminal != null} ? ${onibus.terminal.nome} : '—'">Terminal Central</span>
+            </p>
+        </div>
+        <div class="station-detail-status">
+            <span class="status-badge status-lg"
+                  th:classappend="${onibus.padraoMotor != null and onibus.padraoMotor.name().contains('P8')}  ? 'badge-online' :
+                                  (${onibus.padraoMotor != null and onibus.padraoMotor.name().contains('P7')} ? 'badge-maintenance' : 'badge-offline')"
+                  th:text="${onibus.padraoMotor}">P7_EURO_V</span>
+        </div>
+    </div>
+
+    <!-- Mini KPIs ──────────────────────────────────────────────────────── -->
+    <div class="mini-kpi-row" th:if="${not #lists.isEmpty(leituras)}">
+        <div class="mini-kpi">
+            <span class="mini-kpi-label">Última leitura CO₂</span>
+            <span class="mini-kpi-val"
+                  th:text="${#numbers.formatDecimal(leituras[0].co2Medido, 1, 2)} + ' ppm'"
+                  th:classappend="${leituras[0].co2Medido > 1000} ? 'text-danger' : 'text-ok'">—</span>
+        </div>
+        <div class="mini-kpi">
+            <span class="mini-kpi-label">km/dia</span>
+            <span class="mini-kpi-val" th:text="${onibus.kmDia}">250</span>
+        </div>
+        <div class="mini-kpi">
+            <span class="mini-kpi-label">Combustível</span>
+            <span class="mini-kpi-val" th:text="${onibus.combustivel}">DIESEL_B15</span>
+        </div>
+        <div class="mini-kpi">
+            <span class="mini-kpi-label">Ar-condicionado</span>
+            <span class="mini-kpi-val"
+                  th:text="${onibus.temArCondicionado} ? 'Sim' : 'Não'">Não</span>
+        </div>
+        <div class="mini-kpi">
+            <span class="mini-kpi-label">Total leituras (24h)</span>
+            <span class="mini-kpi-val" th:text="${#lists.size(leituras)}">0</span>
+        </div>
+    </div>
+
+    <!-- Gráfico CO₂ ────────────────────────────────────────────────────── -->
+    <div class="chart-card" style="margin-bottom:20px;">
+        <div class="chart-header">
+            <h3>CO₂ Medido — Últimas 24 horas</h3>
+            <span class="chart-badge" th:text="${onibus.placa}">ABC-1234</span>
+        </div>
+        <div class="chart-body">
+            <canvas id="onibusDetailChart" height="100"></canvas>
+        </div>
+    </div>
+
+    <!-- Tabela de leituras ──────────────────────────────────────────────── -->
+    <div class="table-card full-width">
+        <div class="table-card-header">
+            <h3>Histórico de Leituras CO₂ (últimas 24h)</h3>
+            <span style="font-size:0.78rem;color:var(--text-muted)"
+                  th:text="${#lists.size(leituras)} + ' registros'">0 registros</span>
+        </div>
+        <div style="overflow-x:auto">
+            <table class="data-table">
+                <thead>
+                <tr>
+                    <th>Data/Hora</th>
+                    <th>CO₂ Medido (ppm)</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="l : ${leituras}">
+                    <td th:text="${#temporals.format(l.dataHora, 'dd/MM/yyyy HH:mm:ss')}">—</td>
+                    <td th:text="${l.co2Medido != null} ? ${#numbers.formatDecimal(l.co2Medido, 1, 2)} : '—'"
+                        th:classappend="${l.co2Medido != null and l.co2Medido > 1000} ? 'text-danger' : ''">—</td>
+                    <td>
+                        <span th:if="${l.co2Medido != null and l.co2Medido > 1000}"
+                              class="alert-badge badge-danger">⚠ Acima do limite</span>
+                        <span th:if="${l.co2Medido == null or l.co2Medido <= 1000}"
+                              class="alert-badge badge-ok">✓ Normal</span>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(leituras)}">
+                    <td colspan="3" style="text-align:center;padding:30px;color:var(--text-dim)">
+                        Nenhuma leitura nas últimas 24 horas.
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div style="margin-top:16px;display:flex;gap:10px">
+        <a th:href="@{/onibus}"                           class="btn-outline">← Voltar para Ônibus</a>
+        <a th:href="@{/leituras/nova}"                    class="btn-primary">+ Nova Leitura</a>
+        <a th:href="@{/terminais/{id}/emissoes(id=${onibus.terminal != null ? onibus.terminal.id : 0})}"
+           class="btn-outline">📈 Emissões do Terminal</a>
+    </div>
+
+</th:block>
+
+<th:block th:fragment="scriptsExtra">
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const leituras = /*[[${leituras}]]*/ [];
+        /*]]>*/
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const canvas = document.getElementById('onibusDetailChart');
+            if (!canvas || !leituras.length) return;
+
+            const reversed = [...leituras].reverse();
+            const labels = reversed.map(l => {
+                const d = new Date(l.dataHora);
+                return d.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
+            });
+
+            new Chart(canvas.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'CO₂ (ppm)',
+                        data: reversed.map(l => l.co2Medido),
+                        borderColor: '#22c55e',
+                        backgroundColor: 'rgba(34,197,94,0.08)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 3,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    interaction: {mode: 'index', intersect: false},
+                    plugins: {
+                        legend: {display: true},
+                        tooltip: {backgroundColor: '#111814', borderColor: '#1e3027', borderWidth: 1},
+                        annotation: {
+                            annotations: {
+                                limiteAlerta: {
+                                    type: 'line',
+                                    yMin: 1000, yMax: 1000,
+                                    borderColor: '#ef4444',
+                                    borderWidth: 1,
+                                    borderDash: [5, 5],
+                                    label: {content: 'Limite 1000 ppm', enabled: true, position: 'end'}
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {grid: {color: 'rgba(30,48,39,0.8)'}, ticks: {maxTicksLimit: 12}},
+                        y: {
+                            grid: {color: 'rgba(30,48,39,0.8)'},
+                            title: {display: true, text: 'CO₂ (ppm)', color: '#22c55e'}
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</th:block>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::content}, ~{::scriptsExtra})}">
+<head><title>Leituras de CO₂ e Emissões</title></head>
+<body>
+
+<th:block th:fragment="content">
+
+    <!-- Cabeçalho ──────────────────────────────────────────────────────── -->
+    <div class="page-header">
+        <div class="header-text">
+            <h2 th:if="${terminal != null}" th:text="'Emissões — ' + ${terminal.nome}">Emissões do Terminal</h2>
+            <h2 th:if="${terminal == null}">Leituras de CO₂</h2>
+            <p>Histórico de medições e emissões calculadas pelas fórmulas ICCT/SPTrans.</p>
+        </div>
+        <div class="header-actions">
+            <a th:href="@{/leituras/nova}" class="btn-primary">+ Registrar Leitura</a>
+        </div>
+    </div>
+
+    <!-- KPIs de emissão (quando vem de /terminais/{id}/emissoes) ────────── -->
+    <div class="kpi-grid" th:if="${resultados != null and not #lists.isEmpty(resultados)}">
+        <div class="kpi-card">
+            <span class="kpi-label">CO₂ Total (t/ano)</span>
+            <span class="kpi-value" th:text="${#numbers.formatDecimal(totalCo2, 1, 3)}">0.000</span>
+            <span class="kpi-unit">toneladas CO₂/ano</span>
+        </div>
+        <div class="kpi-card">
+            <span class="kpi-label">MP Total (t/ano)</span>
+            <span class="kpi-value" th:text="${#numbers.formatDecimal(totalMp, 1, 4)}">0.0000</span>
+            <span class="kpi-unit">toneladas MP/ano</span>
+        </div>
+        <div class="kpi-card">
+            <span class="kpi-label">NOx Total (t/ano)</span>
+            <span class="kpi-value" th:text="${#numbers.formatDecimal(totalNox, 1, 3)}">0.000</span>
+            <span class="kpi-unit">toneladas NOx/ano</span>
+        </div>
+        <div class="kpi-card">
+            <span class="kpi-label">Ônibus no Cálculo</span>
+            <span class="kpi-value" th:text="${#lists.size(resultados)}">0</span>
+            <span class="kpi-unit">veículos</span>
+        </div>
+    </div>
+
+    <!-- Tabela de emissões por ônibus (modo terminal) ──────────────────── -->
+    <div class="table-card" th:if="${resultados != null and not #lists.isEmpty(resultados)}">
+        <div class="table-card-header">
+            <h3>Emissões Estimadas por Ônibus (EC × EF_CO2 × VKT)</h3>
+            <span style="font-size:0.78rem;color:var(--text-muted)">Fórmula ICCT seção 3.8</span>
+        </div>
+        <div style="overflow-x:auto">
+            <table class="data-table">
+                <thead>
+                <tr>
+                    <th>Placa</th>
+                    <th>Terminal</th>
+                    <th>EC (kWh/km)</th>
+                    <th>EF CO₂ (g/kWh)</th>
+                    <th>VKT (km/ano)</th>
+                    <th>CO₂ (t/ano)</th>
+                    <th>MP (t/ano)</th>
+                    <th>NOx (t/ano)</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="r : ${resultados}">
+                    <td class="font-mono" th:text="${r.placa}">ABC-1234</td>
+                    <td th:text="${r.terminal}">Terminal Norte</td>
+                    <td th:text="${#numbers.formatDecimal(r.ecKwhKm, 1, 1)}">5.5</td>
+                    <td th:text="${#numbers.formatDecimal(r.efCo2, 1, 1)}">251.0</td>
+                    <td th:text="${#numbers.formatDecimal(r.vktAnual, 1, 0)}">91250</td>
+                    <td th:text="${#numbers.formatDecimal(r.co2Toneladas, 1, 3)}"
+                        th:classappend="${r.co2Toneladas > 100} ? 'text-danger' : ''">0.000</td>
+                    <td th:text="${#numbers.formatDecimal(r.mpToneladas, 1, 4)}">0.0000</td>
+                    <td th:text="${#numbers.formatDecimal(r.noxToneladas, 1, 3)}">0.000</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Tabela de leituras brutas ───────────────────────────────────────── -->
+    <div class="table-card" th:if="${leituras != null}">
+        <div class="table-card-header">
+            <h3>Histórico de Leituras</h3>
+            <span style="font-size:0.78rem;color:var(--text-muted)"
+                  th:text="${#lists.size(leituras)} + ' registros'">0 registros</span>
+        </div>
+        <div style="overflow-x:auto">
+            <table class="data-table">
+                <thead>
+                <tr>
+                    <th>Data/Hora</th>
+                    <th>Ônibus (Placa)</th>
+                    <th>Terminal</th>
+                    <th>CO₂ Medido (ppm)</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="l : ${leituras}">
+                    <td th:text="${#temporals.format(l.dataHora, 'dd/MM/yyyy HH:mm:ss')}">—</td>
+                    <td class="font-mono"
+                        th:text="${l.onibus != null} ? ${l.onibus.placa} : '—'">ABC-1234</td>
+                    <td th:text="${l.onibus != null and l.onibus.terminal != null}
+                                  ? ${l.onibus.terminal.nome} : '—'">Terminal Central</td>
+                    <td th:text="${l.co2Medido != null} ? ${#numbers.formatDecimal(l.co2Medido, 1, 2)} : '—'"
+                        th:classappend="${l.co2Medido != null and l.co2Medido > 1000} ? 'text-danger' : ''">—</td>
+                    <td>
+                        <span th:if="${l.co2Medido != null and l.co2Medido > 1000}"
+                              class="alert-badge badge-danger">⚠ Acima do limite</span>
+                        <span th:if="${l.co2Medido == null or l.co2Medido <= 1000}"
+                              class="alert-badge badge-ok">✓ Normal</span>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(leituras)}">
+                    <td colspan="5" style="text-align:center;padding:40px;color:var(--text-dim)">
+                        Nenhuma leitura registrada ainda.
+                        <a th:href="@{/leituras/nova}" style="color:var(--accent-green)">Registrar a primeira leitura</a>.
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div style="margin-top:16px">
+        <a th:href="@{/dashboard}" class="btn-outline">← Voltar ao Dashboard</a>
+    </div>
+
+</th:block>
+
+<th:block th:fragment="scriptsExtra"></th:block>
+
+</body>
+</html>

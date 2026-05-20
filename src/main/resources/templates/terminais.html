@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::content}, ~{::scriptsExtra})}">
+<head><title>Terminais</title></head>
+<body>
+
+<th:block th:fragment="content">
+
+    <div class="page-header">
+        <div class="header-text">
+            <h2>Terminais</h2>
+            <p>Gerencie os terminais de ônibus cadastrados no sistema.</p>
+        </div>
+        <div class="header-actions">
+            <a th:href="@{/terminais/novo}" class="btn-primary">+ Novo Terminal</a>
+        </div>
+    </div>
+
+    <!-- Flash de sucesso -->
+    <div th:if="${sucesso}" style="background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);
+         border-radius:8px;padding:12px 16px;margin-bottom:20px;color:#4ade80;font-size:0.84rem"
+         th:text="${sucesso}"></div>
+
+    <!-- Cards de terminais -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px"
+         th:if="${not #lists.isEmpty(terminais)}">
+
+        <div class="table-card" th:each="t : ${terminais}"
+             style="padding:20px 24px;display:flex;flex-direction:column;gap:12px">
+
+            <div style="display:flex;align-items:center;justify-content:space-between">
+                <div>
+                    <span style="font-size:0.65rem;font-family:var(--font-mono);text-transform:uppercase;
+                                 letter-spacing:1px;color:var(--text-dim)" th:text="${t.codigo}">TBF-01</span>
+                    <h3 style="font-size:1rem;font-weight:800;font-family:var(--font-mono);
+                                color:var(--text);margin-top:4px" th:text="${t.nome}">Terminal</h3>
+                </div>
+                <div style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);
+                            border-radius:8px;padding:8px;color:var(--primary-light)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                         style="width:18px;height:18px">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                        <polyline points="9 22 9 12 15 12 15 22"/>
+                    </svg>
+                </div>
+            </div>
+
+            <div style="font-size:0.82rem;color:var(--text-muted)">
+                📍 <span th:text="${t.cidade} + ', ' + ${t.estado}">São Paulo, SP</span>
+            </div>
+
+            <div style="border-top:1px solid var(--border);padding-top:12px;
+                        display:flex;gap:8px;flex-wrap:wrap">
+                <a th:href="@{/terminais/{id}/emissoes(id=${t.id})}" class="btn-outline"
+                   style="font-size:0.78rem">📈 Emissões</a>
+                <a th:href="@{/onibus(terminalId=${t.id})}" class="btn-outline"
+                   style="font-size:0.78rem">🚌 Ônibus</a>
+                <a th:href="@{/terminais/editar/{id}(id=${t.id})}" class="btn-outline"
+                   style="font-size:0.78rem">✏️ Editar</a>
+                <form th:action="@{/terminais/excluir/{id}(id=${t.id})}" method="post"
+                      style="display:inline"
+                      onsubmit="return confirm('Excluir este terminal e todos seus dados?')">
+                    <button type="submit" class="btn-icon text-danger"
+                            style="font-size:0.78rem;padding:7px 12px">🗑️ Excluir</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Estado vazio -->
+    <div th:if="${#lists.isEmpty(terminais)}"
+         style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;
+                padding:64px 32px;text-align:center;color:var(--text-dim)">
+        <div style="font-size:48px;margin-bottom:16px">🏢</div>
+        <p style="font-size:1rem;font-weight:700;color:var(--text-muted);margin-bottom:8px">
+            Nenhum terminal cadastrado
+        </p>
+        <p style="font-size:0.82rem">
+            Cadastre o primeiro terminal para começar a monitorar a frota.
+        </p>
+    </div>
+
+</th:block>
+<th:block th:fragment="scriptsExtra"></th:block>
+</body>
+</html>
