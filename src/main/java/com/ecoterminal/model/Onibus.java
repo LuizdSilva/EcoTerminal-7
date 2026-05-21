@@ -4,7 +4,6 @@ import com.ecoterminal.enums.PadraoMotor;
 import com.ecoterminal.enums.TipoCombustivel;
 import com.ecoterminal.enums.TipoOnibus;
 import jakarta.persistence.*;
-
 @Entity
 @Table(name = "onibus")
 public class Onibus {
@@ -56,30 +55,48 @@ public class Onibus {
         this.terminal          = terminal;
     }
 
-    public Long getId()                                      { return id; }
-    public void setId(Long id)                               { this.id = id; }
+    public Long getId(){ 
+        return id; }
+    public void setId(Long id){ 
+        this.id = id; }
 
-    public String getPrefixo()                               { return prefixo; }
-    public void setPrefixo(String prefixo)                   { this.prefixo = prefixo; }
+    public String getPrefixo(){
+         return prefixo; }
+    public void setPrefixo(String prefixo){ 
+        this.prefixo = prefixo; }
 
-    public TipoOnibus getTipo()                              { return tipo; }
-    public void setTipo(TipoOnibus tipo)                     { this.tipo = tipo; }
+    public TipoOnibus getTipo(){ 
+        return tipo; }
+    public void setTipo(TipoOnibus tipo){ 
+        this.tipo = tipo; }
 
-    public PadraoMotor getPadraoMotor()                      { return padraoMotor; }
-    public void setPadraoMotor(PadraoMotor padraoMotor)      { this.padraoMotor = padraoMotor; }
+    public PadraoMotor getPadraoMotor(){
+         return padraoMotor; }
+    public void setPadraoMotor(PadraoMotor padraoMotor){ 
+        this.padraoMotor = padraoMotor; }
 
-    public TipoCombustivel getCombustivel()                  { return combustivel; }
-    public void setCombustivel(TipoCombustivel combustivel)  { this.combustivel = combustivel; }
+    public TipoCombustivel getCombustivel(){
+         return combustivel; }
+    public void setCombustivel(TipoCombustivel combustivel){ 
+        this.combustivel = combustivel; }
 
-    public boolean isTemArCondicionado()                             { return temArCondicionado; }
-    public void setTemArCondicionado(boolean temArCondicionado)      { this.temArCondicionado = temArCondicionado; }
+    public boolean isTemArCondicionado(){
+         return temArCondicionado; }
+    public void setTemArCondicionado(boolean temArCondicionado){
+         this.temArCondicionado = temArCondicionado; }
 
-    public double getKmAnuais()                              { return kmAnuais; }
-    public void setKmAnuais(double kmAnuais)                 { this.kmAnuais = kmAnuais; }
+    public double getKmAnuais(){ 
+        return kmAnuais; }
+    public void setKmAnuais(double kmAnuais){ 
+        this.kmAnuais = kmAnuais; }
 
-    public int getAnoFabricacao()                            { return anoFabricacao; }
-    public void setAnoFabricacao(int anoFabricacao)          { this.anoFabricacao = anoFabricacao; }
+    public int getAnoFabricacao(){
+         return anoFabricacao; }
+    public void setAnoFabricacao(int anoFabricacao){
+         this.anoFabricacao = anoFabricacao; }
 
-    public Terminal getTerminal()                            { return terminal; }
-    public void setTerminal(Terminal terminal)               { this.terminal = terminal; }
+    public Terminal getTerminal(){
+         return terminal; }
+    public void setTerminal(Terminal terminal){ 
+        this.terminal = terminal; }
 }

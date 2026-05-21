@@ -12,15 +12,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-/**
- * Configuração central de segurança.
- *
- * Estratégia adotada para evitar dependência circular no Spring Boot 3:
- *  - PasswordEncoder   → PasswordEncoderConfig  (sem dependências de segurança)
- *  - DaoAuthenticationProvider → declarado aqui, recebe UsuarioService + PasswordEncoder
- *  - AuthenticationManager     → obtido via AuthenticationConfiguration (não como @Bean manual)
- *  - SecurityConfig NÃO injeta UsuarioService diretamente; usa o provider já configurado
- */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -34,7 +25,7 @@ public class SecurityConfig {
         this.passwordEncoder = passwordEncoder;
     }
 
-    // ── Provider de autenticação ──────────────────────────────────────────────
+    // ── Provider de autenticação ─────
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
@@ -43,14 +34,14 @@ public class SecurityConfig {
         return provider;
     }
 
-    // ── AuthenticationManager via configuração — sem ciclo ───────────────────
+    // ── AuthenticationManager via configuração — sem ciclo ─────
     @Bean
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
     }
 
-    // ── Regras de acesso e configuração do login ──────────────────────────────
+    // ── Regras de acesso e configuração do login ────
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -63,7 +54,7 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
 
-            // ── Formulário de login ───────────────────────────────────────────
+            // ── Formulário de login ─────
             .formLogin(form -> form
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
@@ -74,7 +65,7 @@ public class SecurityConfig {
                 .permitAll()
             )
 
-            // ── Logout ────────────────────────────────────────────────────────
+            // ── Logout ─────
             .logout(logout -> logout
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/login?logout=true")
@@ -83,16 +74,15 @@ public class SecurityConfig {
                 .permitAll()
             )
 
-            // ── H2 console (apenas em dev — frame embedding) ──────────────────
+            // ── H2 console ───
             .headers(headers -> headers
                 .frameOptions(frame -> frame.sameOrigin())
             )
 
-            // ── CSRF: desabilitado para H2 console e API REST ─────────────────
+            // ── CSRF: desabilitado para H2 console e API REST ───
             .csrf(csrf -> csrf
                 .ignoringRequestMatchers("/h2-console/**", "/api/**")
             );
-
         return http.build();
     }
 }

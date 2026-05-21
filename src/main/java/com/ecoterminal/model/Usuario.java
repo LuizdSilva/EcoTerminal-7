@@ -15,7 +15,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
-
 @Entity
 @Table(name = "usuario")
 @Data
@@ -64,12 +63,18 @@ public class Usuario implements UserDetails {
         return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
-    @Override public String getPassword()              { return senha; }
-    @Override public String getUsername()              { return email; }
-    @Override public boolean isAccountNonExpired()     { return true; }
-    @Override public boolean isAccountNonLocked()      { return true; }
-    @Override public boolean isCredentialsNonExpired() { return true; }
-    @Override public boolean isEnabled()               { return ativo; }
+    @Override public String getPassword(){
+         return senha; }
+    @Override public String getUsername(){
+         return email; }
+    @Override public boolean isAccountNonExpired(){
+         return true; }
+    @Override public boolean isAccountNonLocked(){
+         return true; }
+    @Override public boolean isCredentialsNonExpired(){
+         return true; }
+    @Override public boolean isEnabled(){
+         return ativo; }
 
     public enum Role { ADMIN, OPERADOR }
 }

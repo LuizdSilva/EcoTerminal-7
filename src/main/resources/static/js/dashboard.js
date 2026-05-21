@@ -1,14 +1,6 @@
 /**
- * dashboard.js — Bloco 5
- *
- * Depende de:
- *   - Chart.js carregado via CDN (adicionado no layout.html)
- *   - variável `co2PorHora` injetada pelo Thymeleaf no dashboard.html
- *
  * Gráfico: emissões de CO₂ por hora (linha simples)
- * Badges:  coloridos conforme nível de alerta (verde / amarelo / vermelho)
  */
-
 document.addEventListener('DOMContentLoaded', function () {
 
     // ─── Gráfico de linha — CO₂ por hora ────────────────────────────────────
@@ -74,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        // Linha de limite horizontal via anotação manual (sem plugin extra)
+        // Linha de limite horizontal via anotação manual 
         // Desenha sobre o canvas depois que o Chart.js renderizou
         canvasCo2Hora.addEventListener('chartRendered', () => {
             const chart = Chart.getChart(canvasCo2Hora);

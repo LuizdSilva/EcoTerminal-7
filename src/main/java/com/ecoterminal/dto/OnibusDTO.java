@@ -4,7 +4,6 @@ import com.ecoterminal.enums.PadraoMotor;
 import com.ecoterminal.enums.TipoCombustivel;
 import com.ecoterminal.enums.TipoOnibus;
 import com.ecoterminal.model.Onibus;
-
 public class OnibusDTO {
 
     private Long id;
@@ -20,48 +19,68 @@ public class OnibusDTO {
 
     public static OnibusDTO fromEntity(Onibus o) {
         OnibusDTO dto = new OnibusDTO();
-        dto.id                = o.getId();
-        dto.prefixo           = o.getPrefixo();
-        dto.tipo              = o.getTipo();
-        dto.padraoMotor       = o.getPadraoMotor();
-        dto.combustivel       = o.getCombustivel();
+        dto.id = o.getId();
+        dto.prefixo = o.getPrefixo();
+        dto.tipo = o.getTipo();
+        dto.padraoMotor = o.getPadraoMotor();
+        dto.combustivel= o.getCombustivel();
         dto.temArCondicionado = o.isTemArCondicionado();
-        dto.kmAnuais          = o.getKmAnuais();
-        dto.anoFabricacao     = o.getAnoFabricacao();
+        dto.kmAnuais= o.getKmAnuais();
+        dto.anoFabricacao = o.getAnoFabricacao();
         if (o.getTerminal() != null) {
-            dto.terminalId   = o.getTerminal().getId();
+            dto.terminalId= o.getTerminal().getId();
             dto.terminalNome = o.getTerminal().getNome();
         }
         return dto;
     }
+    public Long getId(){
+         return id; }
+    public void setId(Long id){ 
+        this.id = id; }
 
-    public Long getId()                                          { return id; }
-    public void setId(Long id)                                   { this.id = id; }
+    public String getPrefixo(){
+         return prefixo; }
+    public void setPrefixo(String prefixo){
+         this.prefixo = prefixo; }
 
-    public String getPrefixo()                                   { return prefixo; }
-    public void setPrefixo(String prefixo)                       { this.prefixo = prefixo; }
+    public TipoOnibus getTipo(){
+         return tipo; }
+    public void setTipo(TipoOnibus tipo){
+         this.tipo = tipo; }
 
-    public TipoOnibus getTipo()                                  { return tipo; }
-    public void setTipo(TipoOnibus tipo)                         { this.tipo = tipo; }
+    public PadraoMotor getPadraoMotor(){ 
+        return padraoMotor; }
+    public void setPadraoMotor(PadraoMotor padraoMotor){
+         this.padraoMotor = padraoMotor; }
 
-    public PadraoMotor getPadraoMotor()                          { return padraoMotor; }
-    public void setPadraoMotor(PadraoMotor padraoMotor)          { this.padraoMotor = padraoMotor; }
+    public TipoCombustivel getCombustivel(){
+         return combustivel; }
+    public void setCombustivel(TipoCombustivel combustivel){
+         this.combustivel = combustivel; }
 
-    public TipoCombustivel getCombustivel()                      { return combustivel; }
-    public void setCombustivel(TipoCombustivel combustivel)      { this.combustivel = combustivel; }
+    public boolean isTemArCondicionado(){
+         return temArCondicionado; }
+    public void setTemArCondicionado(boolean temArCondicionado){
+         this.temArCondicionado = temArCondicionado; }
 
-    public boolean isTemArCondicionado()                                 { return temArCondicionado; }
-    public void setTemArCondicionado(boolean temArCondicionado)          { this.temArCondicionado = temArCondicionado; }
+    public double getKmAnuais(){ 
+        return kmAnuais; }
+    public void setKmAnuais(double kmAnuais){
+         this.kmAnuais = kmAnuais; }
 
-    public double getKmAnuais()                                  { return kmAnuais; }
-    public void setKmAnuais(double kmAnuais)                     { this.kmAnuais = kmAnuais; }
+    public int getAnoFabricacao(){
+         return anoFabricacao; }
+    public void setAnoFabricacao(int anoFabricacao){ 
+        this.anoFabricacao = anoFabricacao; }
 
-    public int getAnoFabricacao()                                { return anoFabricacao; }
-    public void setAnoFabricacao(int anoFabricacao)              { this.anoFabricacao = anoFabricacao; }
+    public Long getTerminalId(){
+        return terminalId; }
+    public void setTerminalId(Long terminalId){
+         this.terminalId = terminalId; }
 
-    public Long getTerminalId()                                  { return terminalId; }
-    public void setTerminalId(Long terminalId)                   { this.terminalId = terminalId; }
-
-    public String getTerminalNome()                              { return terminalNome; }
-    public void setTerminalNome(String terminalNome)             { this.terminalNome = terminalNome; }
+    public String getTerminalNome(){
+         return terminalNome; }
+    public void setTerminalNome(String terminalNome){
+         this.terminalNome = terminalNome; }
 }
+ 

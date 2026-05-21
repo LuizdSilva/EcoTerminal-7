@@ -9,7 +9,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-
 @Repository
 public interface AlertaEmissaoRepository extends JpaRepository<AlertaEmissao, Long> {
 
@@ -22,11 +21,7 @@ public interface AlertaEmissaoRepository extends JpaRepository<AlertaEmissao, Lo
     List<AlertaEmissao> findByTipo(TipoAlerta tipo);
 
     long countByOnibusTerminalIdAndReconhecidoFalse(Long terminalId);
-
-    /**
-     * Verifica se já existe alerta ativo (não reconhecido) de determinado tipo
-     * para um ônibus específico — usado para evitar duplicatas sem carregar a lista inteira.
-     */
+    
     @Query("""
             SELECT COUNT(a) > 0 FROM AlertaEmissao a
             WHERE a.onibus.id = :onibusId

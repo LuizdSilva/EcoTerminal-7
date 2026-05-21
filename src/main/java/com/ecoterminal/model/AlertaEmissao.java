@@ -2,7 +2,6 @@ package com.ecoterminal.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
-
 @Entity
 @Table(name = "alerta_emissao")
 public class AlertaEmissao {
@@ -13,11 +12,9 @@ public class AlertaEmissao {
         CO2_META_NAO_ATINGIDA,
         CONFORMIDADE_LEI_16802
     }
-
     public enum Severidade {
         INFO, AVISO, CRITICO
     }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -62,31 +59,48 @@ public class AlertaEmissao {
         this.valorMedido = valorMedido;
         this.valorLimite = valorLimite;
     }
+    public Long getId(){ 
+        return id; }
+    public void setId(Long id){ 
+        this.id = id; }
 
-    public Long getId()                            { return id; }
-    public void setId(Long id)                     { this.id = id; }
+    public Onibus getOnibus(){ 
+        return onibus; }
+    public void setOnibus(Onibus onibus){ 
+        this.onibus = onibus; }
 
-    public Onibus getOnibus()                      { return onibus; }
-    public void setOnibus(Onibus onibus)           { this.onibus = onibus; }
+    public TipoAlerta getTipo(){ 
+        return tipo; }
+    public void setTipo(TipoAlerta tipo){ 
+        this.tipo = tipo; }
 
-    public TipoAlerta getTipo()                    { return tipo; }
-    public void setTipo(TipoAlerta tipo)           { this.tipo = tipo; }
+    public Severidade getSeveridade(){ 
+        return severidade; }
+    public void setSeveridade(Severidade severidade){ 
+        this.severidade = severidade; }
 
-    public Severidade getSeveridade()                    { return severidade; }
-    public void setSeveridade(Severidade severidade)     { this.severidade = severidade; }
+    public LocalDateTime getDataHora(){ 
+        return dataHora; }
+    public void setDataHora(LocalDateTime dataHora){
+         this.dataHora = dataHora; }
 
-    public LocalDateTime getDataHora()                   { return dataHora; }
-    public void setDataHora(LocalDateTime dataHora)      { this.dataHora = dataHora; }
+    public String getMensagem(){ 
+        return mensagem; }
+    public void setMensagem(String mensagem){
+         this.mensagem = mensagem; }
 
-    public String getMensagem()                    { return mensagem; }
-    public void setMensagem(String mensagem)       { this.mensagem = mensagem; }
+    public Double getValorMedido(){ 
+        return valorMedido; }
+    public void setValorMedido(Double valorMedido){ 
+        this.valorMedido = valorMedido; }
 
-    public Double getValorMedido()                       { return valorMedido; }
-    public void setValorMedido(Double valorMedido)       { this.valorMedido = valorMedido; }
+    public Double getValorLimite(){ 
+        return valorLimite; }
+    public void setValorLimite(Double valorLimite){ 
+        this.valorLimite = valorLimite; }
 
-    public Double getValorLimite()                       { return valorLimite; }
-    public void setValorLimite(Double valorLimite)       { this.valorLimite = valorLimite; }
-
-    public boolean isReconhecido()                       { return reconhecido; }
-    public void setReconhecido(boolean reconhecido)      { this.reconhecido = reconhecido; }
+    public boolean isReconhecido(){ 
+        return reconhecido; }
+    public void setReconhecido(boolean reconhecido){
+         this.reconhecido = reconhecido; }
 }

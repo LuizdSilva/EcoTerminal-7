@@ -11,23 +11,20 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
-
 @Controller
 @RequiredArgsConstructor
 public class TerminaisMvcController {
 
-    private final TerminalRepository   terminalRepository;
-    private final OnibusRepository     onibusRepository;
+    private final TerminalRepository terminalRepository;
+    private final OnibusRepository onibusRepository;
     private final LeituraCO2Repository leituraRepository;
 
-    // ── Lista de terminais ───────────────────────────────────────────────────
+    // ── Lista de terminais ───
     @GetMapping("/terminais")
     public String listar(Model model) {
         model.addAttribute("terminais", terminalRepository.findAll());
         return "terminais";
     }
-
-    // ── Emissões de um terminal (rota usada nos links da sidebar e ônibus) ───
     @GetMapping("/terminais/{id}/emissoes")
     public String emissoes(@PathVariable Long id, Model model) {
         Terminal terminal = terminalRepository.findById(id)
@@ -43,13 +40,13 @@ public class TerminaisMvcController {
         return "leituras";
     }
 
-    // ── Formulário novo terminal ─────────────────────────────────────────────
+    // ── Formulário novo terminal ────
     @GetMapping("/terminais/novo")
     public String novoForm(Model model) {
     model.addAttribute("terminal", new Terminal());
     return "terminais-form";  
     }
-    // ── Salvar novo terminal ─────────────────────────────────────────────────
+    // ── Salvar novo terminal ───
     @PostMapping("/terminais/novo")
     public String salvar(@ModelAttribute Terminal terminal, RedirectAttributes ra) {
         terminalRepository.save(terminal);
@@ -57,7 +54,7 @@ public class TerminaisMvcController {
         return "redirect:/terminais";
     }
 
-    // ── Formulário editar terminal ───────────────────────────────────────────
+    // ── Formulário editar terminal ─────
     @GetMapping("/terminais/editar/{id}")
     public String editarForm(@PathVariable Long id, Model model) {
         Terminal terminal = terminalRepository.findById(id)
@@ -66,7 +63,7 @@ public class TerminaisMvcController {
         return "terminal-form";
     }
 
-    // ── Salvar edição ────────────────────────────────────────────────────────
+    // ── Salvar edição ───
     @PostMapping("/terminais/editar/{id}")
     public String salvarEdicao(@PathVariable Long id,
                                @ModelAttribute Terminal dados,
@@ -82,7 +79,7 @@ public class TerminaisMvcController {
         return "redirect:/terminais";
     }
 
-    // ── Excluir terminal ─────────────────────────────────────────────────────
+    // ── Excluir terminal ────
     @PostMapping("/terminais/excluir/{id}")
     public String excluir(@PathVariable Long id, RedirectAttributes ra) {
         terminalRepository.deleteById(id);

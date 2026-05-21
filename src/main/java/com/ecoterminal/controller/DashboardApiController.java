@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import java.time.Year;
 import java.util.List;
 import java.util.Map;
-
 @RestController
 @RequestMapping("/api/dashboard")
 @CrossOrigin(origins = "*")
@@ -25,11 +24,7 @@ public class DashboardApiController {
         this.alertaService    = alertaService;
     }
 
-    // ── Resumo e relatórios ───────────────────────────────────────────────────
-
-    /**
-     * Resumo geral do terminal para o card principal do dashboard.
-     */
+    // ── Resumo e relatórios ──────
     @GetMapping("/terminal/{terminalId}")
     public ResponseEntity<RelatorioService.DashboardResumo> resumoTerminal(
             @PathVariable Long terminalId,
@@ -37,10 +32,6 @@ public class DashboardApiController {
         return ResponseEntity.ok(
                 relatorioService.resumoTerminal(terminalId, resolverAno(ano)));
     }
-
-    /**
-     * Top N ônibus com maior emissão de CO2 no terminal/ano.
-     */
     @GetMapping("/terminal/{terminalId}/maiores-emissores")
     public ResponseEntity<List<EmissaoResultadoDTO>> maioresEmissores(
             @PathVariable Long terminalId,
@@ -51,7 +42,7 @@ public class DashboardApiController {
     }
 
     /**
-     * Distribuição de CO2 por padrão de motor — dados para gráfico de pizza.
+     * Distribuição de CO2 por padrão de motor 
      */
     @GetMapping("/terminal/{terminalId}/co2-por-motor")
     public ResponseEntity<Map<String, Double>> co2PorPadraoMotor(
@@ -82,34 +73,29 @@ public class DashboardApiController {
         return ResponseEntity.ok(relatorioService.historicoOnibus(onibusId));
     }
 
-    // ── Alertas ───────────────────────────────────────────────────────────────
-
+    // ── Alertas ──────
     @GetMapping("/alertas/terminal/{terminalId}")
     public ResponseEntity<List<AlertaEmissao>> alertasPorTerminal(
             @PathVariable Long terminalId) {
         return ResponseEntity.ok(alertaService.listarPorTerminal(terminalId));
     }
-
     @GetMapping("/alertas/onibus/{onibusId}")
     public ResponseEntity<List<AlertaEmissao>> alertasPorOnibus(
             @PathVariable Long onibusId) {
         return ResponseEntity.ok(alertaService.listarPorOnibus(onibusId));
     }
-
     @GetMapping("/alertas/terminal/{terminalId}/count")
     public ResponseEntity<Long> contarAlertasNaoReconhecidos(
             @PathVariable Long terminalId) {
         return ResponseEntity.ok(alertaService.contarNaoReconhecidos(terminalId));
     }
-
     @PatchMapping("/alertas/{alertaId}/reconhecer")
     public ResponseEntity<AlertaEmissao> reconhecerAlerta(
             @PathVariable Long alertaId) {
         return ResponseEntity.ok(alertaService.reconhecer(alertaId));
     }
-
-    // ── Helper ────────────────────────────────────────────────────────────────
-
+   
+    // ── Helper ────────
     private static int resolverAno(int ano) {
         return (ano == 0) ? Year.now().getValue() : ano;
     }

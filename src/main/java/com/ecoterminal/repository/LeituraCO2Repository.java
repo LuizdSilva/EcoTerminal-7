@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
 @Repository
 public interface LeituraCO2Repository extends JpaRepository<LeituraCO2, Long> {
 

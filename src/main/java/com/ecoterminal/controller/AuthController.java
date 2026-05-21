@@ -12,15 +12,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 @Controller
 @RequiredArgsConstructor
 public class AuthController {
 
     private final UsuarioService usuarioService;
 
-    // ── Página de login ───────────────────────────────────────────────────────
-
+    // ── Página de login ────────
     @GetMapping("/login")
     public String loginPage(
             @RequestParam(required = false) String erro,
@@ -31,8 +29,7 @@ public class AuthController {
         return "login";
     }
 
-    // ── Página de cadastro ────────────────────────────────────────────────────
-
+    // ── Página de cadastro ─────────
     @GetMapping("/cadastro")
     public String cadastroPage(Model model) {
         model.addAttribute("cadastroDTO", new CadastroDTO("", "", "", ""));
@@ -46,17 +43,13 @@ public class AuthController {
             RedirectAttributes redirectAttributes,
             Model model) {
 
-        // Erros de validação dos campos (@NotBlank, @Email, etc.)
-        if (bindingResult.hasErrors()) {
+                if (bindingResult.hasErrors()) {
             return "cadastro";
         }
-
-        // Verificação de senhas antes de chamar o service
         if (!dto.senhasConferem()) {
             model.addAttribute("erroCadastro", "As senhas não conferem.");
             return "cadastro";
         }
-
         try {
             usuarioService.cadastrar(dto);
             redirectAttributes.addFlashAttribute("sucesso",

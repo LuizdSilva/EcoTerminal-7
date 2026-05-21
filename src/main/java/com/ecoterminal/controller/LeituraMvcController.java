@@ -12,14 +12,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
 @Controller
 @RequiredArgsConstructor
 public class LeituraMvcController {
 
     private final LeituraCO2Repository leituraRepository;
     private final OnibusRepository     onibusRepository;
-    // ── Lista de leituras (últimas 24h) ──────────────────────────────────────
+    // ── Lista de leituras (últimas 24h) ───
     @GetMapping("/leituras")
     public String listar(Model model) {
         LocalDateTime inicio = LocalDateTime.now().minusHours(24);
@@ -31,16 +30,14 @@ public class LeituraMvcController {
         model.addAttribute("leituras", leituras);
         return "leituras";
     }
-
-    // ── Formulário nova leitura ───────────────────────────────────────────────
+    // ── Formulário nova leitura ─────
     @GetMapping("/leituras/nova")
     public String novaForm(Model model) {
         model.addAttribute("leitura",  new LeituraCO2());
         model.addAttribute("onibus",   onibusRepository.findAll());
         return "leitura-form";
     }
-
-    // ── Salvar nova leitura ───────────────────────────────────────────────────
+    // ── Salvar nova leitura ───────
     @PostMapping("/leituras/nova")
     public String salvar(@ModelAttribute LeituraCO2 leitura,
                          @RequestParam Long onibusId,
@@ -56,7 +53,7 @@ public class LeituraMvcController {
         return "redirect:/leituras";
     }
 
-    // ── Excluir leitura ───────────────────────────────────────────────────────
+    // ── Excluir leitura ────
     @PostMapping("/leituras/excluir/{id}")
     public String excluir(@PathVariable Long id, RedirectAttributes ra) {
         leituraRepository.deleteById(id);

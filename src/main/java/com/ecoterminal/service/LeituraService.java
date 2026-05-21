@@ -43,7 +43,7 @@ public class LeituraService {
         this.alertaService        = alertaService;
     }
 
-    // ─── Leitura ─────────────────────────────────────────────────────────────
+    // ─── Leitura ─────
 
     @Transactional(readOnly = true)
     public List<LeituraDTO> listarPorOnibus(Long onibusId) {
@@ -63,8 +63,7 @@ public class LeituraService {
                 .toList();
     }
 
-    // ─── Registro ────────────────────────────────────────────────────────────
-
+    // ─── Registro ──────
     /**
      * Registra uma nova leitura e automaticamente:
      * <ol>
@@ -102,13 +101,7 @@ public class LeituraService {
         leituraRepository.delete(leitura);
     }
 
-    // ─── Helpers ─────────────────────────────────────────────────────────────
-
-    /**
-     * Recalcula as emissões anuais do ônibus usando o VKT real acumulado no ano corrente.
-     * Se houver dado real de quilometragem, atualiza e persiste a entidade Onibus
-     * antes de calcular as emissões, garantindo consistência no banco.
-     */
+    // ─── Helpers ─────
     private void recalcularEmissaoAnual(Onibus onibus) {
         int anoAtual = LocalDateTime.now().getYear();
 
@@ -118,7 +111,7 @@ public class LeituraService {
 
         if (vktReal != null && vktReal > 0) {
             onibus.setKmAnuais(vktReal);
-            onibusRepository.save(onibus); // persiste a atualização do VKT
+            onibusRepository.save(onibus); 
         }
 
         EmissaoCO2 emissao = calculoService.calcular(onibus, anoAtual);

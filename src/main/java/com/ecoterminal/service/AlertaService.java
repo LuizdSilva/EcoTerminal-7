@@ -14,14 +14,6 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 import java.util.List;
 
-/**
- * Gera e gerencia alertas de emissão automaticamente após cada cálculo.
- *
- * Limites de referência (CONAMA P7 / Lei 16.802):
- *   NOx — limite P7 Padron : 4,0  g/km  → AVISO acima, CRÍTICO se > 2×
- *   MP  — limite P7 Padron : 0,04 g/km  → mesma lógica
- *   CO2 — meta Lei 16.802  : baseado na conformidade calculada
- */
 @Service
 @Transactional
 public class AlertaService {
@@ -32,7 +24,7 @@ public class AlertaService {
         this.alertaRepository = alertaRepository;
     }
 
-    // ─── Leitura ─────────────────────────────────────────────────────────────
+    // ─── Leitura ────
 
     @Transactional(readOnly = true)
     public List<AlertaEmissao> listarPorTerminal(Long terminalId) {
@@ -49,7 +41,7 @@ public class AlertaService {
         return alertaRepository.countByOnibusTerminalIdAndReconhecidoFalse(terminalId);
     }
 
-    // ─── Ações ───────────────────────────────────────────────────────────────
+    // ─── Ações ─────
 
     public AlertaEmissao reconhecer(Long alertaId) {
         AlertaEmissao alerta = alertaRepository.findById(alertaId)
@@ -59,8 +51,7 @@ public class AlertaService {
         return alertaRepository.save(alerta);
     }
 
-    // ─── Geração automática ───────────────────────────────────────────────────
-
+    // ─── Geração automática ──────
     /**
      * Chamado automaticamente pelo {@link LeituraService} após cada recálculo.
      * Verifica os EF usados vs limites P7 e a conformidade com a Lei 16.802.
@@ -71,7 +62,6 @@ public class AlertaService {
         Onibus onibus = emissao.getOnibus();
         LocalDateTime agora = LocalDateTime.now();
 
-        // ── NOx: limite P7 Padron = 4,0 g/km
         double limNoxP7 = 4.0;
         double efNox    = emissao.getEfNoxGKm();
         if (efNox > limNoxP7) {
@@ -84,7 +74,6 @@ public class AlertaService {
             ));
         }
 
-        // ── MP: limite P7 Padron = 0,04 g/km
         double limMpP7 = 0.04;
         double efMp    = emissao.getEfMpGKm();
         if (efMp > limMpP7) {
@@ -97,7 +86,6 @@ public class AlertaService {
             ));
         }
 
-        // ── CO2: fora da meta Lei 16.802
         if (Boolean.FALSE.equals(emissao.getConformeCo2())) {
             criarSeNaoExistir(new AlertaEmissao(
                     onibus, TipoAlerta.CO2_META_NAO_ATINGIDA, Severidade.AVISO, agora,
@@ -122,12 +110,7 @@ public class AlertaService {
         }
     }
 
-    // ─── Helper ──────────────────────────────────────────────────────────────
-
-    /**
-     * Evita duplicar alertas não reconhecidos do mesmo tipo para o mesmo ônibus.
-     * Usa query dedicada no repositório para não carregar a lista inteira em memória.
-     */
+    // ─── Helper ───────
     private void criarSeNaoExistir(AlertaEmissao novo) {
         boolean jaExiste = alertaRepository.existsAtivoByOnibusIdAndTipo(
                 novo.getOnibus().getId(), novo.getTipo());

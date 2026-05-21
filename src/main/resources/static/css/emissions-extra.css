@@ -1,16 +1,6 @@
 /*
- * emissions-extra.css — Bloco 5
- *
  * Estilos adicionais para o projeto de monitoramento de terminal de ônibus.
- * Adicione no layout.html: <link rel="stylesheet" th:href="@{/css/emissions-extra.css}">
- *
- * Não reinventa: complementa o CSS existente em /static/css/.
  */
-
-/* ═══════════════════════════════════════════════════════════
-   BADGES DE ALERTA (verde / amarelo / vermelho)
-   Uso: <span class="alert-badge badge-ok">✓ Normal</span>
-═══════════════════════════════════════════════════════════ */
 .alert-badge {
     display: inline-flex;
     align-items: center;

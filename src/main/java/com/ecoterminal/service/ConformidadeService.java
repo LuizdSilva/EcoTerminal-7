@@ -3,27 +3,10 @@ package com.ecoterminal.service;
 import com.ecoterminal.model.EmissaoCO2;
 import org.springframework.stereotype.Service;
 
-/**
- * Verifica conformidade das emissões com as metas da Lei Municipal 16.802/2018
- * (Prefeitura de São Paulo).
- *
- * Metas em relação à linha de base 2016 (frota SPTrans):
- *
- *   Horizonte 10 anos (até 2028): CO2 −50% | MP −90% | NOx −80%
- *   Horizonte 20 anos (até 2038): CO2 −100% | MP −95% | NOx −95%
- *
- * Valores de referência absolutos 2016 (frota toda — SPTrans):
- *   CO2_BASE = 1.240.000 t/ano
- *   MP_BASE  =     144,7 t/ano
- *   NOx_BASE =   9.130,0 t/ano
- *
- * As metas são aplicadas POR ÔNIBUS de forma proporcional ao VKT individual.
- * Para relatório de frota, use os valores totais agregados.
- */
 @Service
 public class ConformidadeService {
 
-    // ─── Linha de base 2016 — SPTrans ────────────────────────────────────────
+    // ─── Linha de base 2016 — SPTrans ──────
     public static final double CO2_BASE_2016_TON = 1_240_000.0;
     public static final double MP_BASE_2016_TON  =       144.7;
     public static final double NOX_BASE_2016_TON =     9_130.0;
@@ -35,11 +18,7 @@ public class ConformidadeService {
      */
     private static final double VKT_BASE_FROTA_KM = 1_020_000_000.0;
 
-    // ─── DTO de resultado ─────────────────────────────────────────────────────
-
-    /**
-     * Resultado da verificação de conformidade de um ônibus.
-     */
+    // ─── DTO de resultado ───────────
     public record ConformidadeReport(
             boolean conformeCo2,
             boolean conformeMp,
@@ -50,7 +29,7 @@ public class ConformidadeService {
             String  descricaoMeta
     ) {}
 
-    // ─── API pública ──────────────────────────────────────────────────────────
+    // ─── API pública ─────
 
     /**
      * Verifica a conformidade de um resultado de emissão calculado.

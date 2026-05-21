@@ -10,12 +10,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-/**
- * Inicialização de dados essenciais na primeira execução.
- *
- * Cria o usuário administrador padrão caso não exista nenhum cadastro.
- * Em produção, troque a senha padrão imediatamente após o primeiro acesso.
- */
 @Configuration
 @RequiredArgsConstructor
 public class DataInitializer {

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::content}, ~{::scriptsExtra})}">
+<head><title>Relatórios de Auditoria — EcoTerminal</title></head>
+<body>
+
+<th:block th:fragment="content">
+
+    <!-- Cabeçalho ──────────────────────────────────────────────────────── -->
+    <div class="page-header">
+        <div class="header-text">
+            <h2>Relatórios de Auditoria</h2>
+            <p>Geração de relatórios PDF de emissões — Lei Municipal 16.802/2018.</p>
+        </div>
+        <div class="header-actions">
+            <span style="font-size:0.75rem;font-family:var(--font-mono);color:var(--text-dim)">
+                Período selecionado:
+            </span>
+            <span style="font-size:0.8rem;font-family:var(--font-mono);color:var(--accent-green)"
+                  th:text="'Últimos ' + ${diasSelecionado} + ' dias'">Últimos 30 dias</span>
+        </div>
+    </div>
+
+    <!-- Flash de sucesso ────────────────────────────────────────────────── -->
+    <div th:if="${sucesso}" style="
+        background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);
+        border-radius:var(--radius);padding:12px 18px;margin-bottom:20px;
+        font-size:0.84rem;color:var(--accent-green);display:flex;align-items:center;gap:8px">
+        ✅ <span th:text="${sucesso}"></span>
+    </div>
+
+    <!-- ─── Seleção de período + download rápido ─────────────────────── -->
+    <div class="table-card" style="margin-bottom:20px">
+        <div class="table-card-header">
+            <h3>📄 Período do Relatório</h3>
+            <span style="font-size:0.75rem;color:var(--text-dim)">Clique para baixar o PDF de auditoria</span>
+        </div>
+        <div style="padding:20px 24px;display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+            <a th:href="@{/relatorios/pdf(dias=7)}"  class="btn-outline" style="font-size:0.8rem">
+                📋 Últimos 7 dias
+            </a>
+            <a th:href="@{/relatorios/pdf(dias=30)}" class="btn-primary" style="font-size:0.8rem"
+               th:classappend="${diasSelecionado == 30} ? '' : 'btn-outline'">
+                📋 Últimos 30 dias
+            </a>
+            <a th:href="@{/relatorios/pdf(dias=90)}" class="btn-outline" style="font-size:0.8rem">
+                📋 Últimos 90 dias
+            </a>
+            <a th:href="@{/relatorios/pdf(dias=365)}" class="btn-outline" style="font-size:0.8rem">
+                📋 Último ano
+            </a>
+        </div>
+    </div>
+
+    <!-- ─── KPIs do período ──────────────────────────────────────────── -->
+    <div class="kpi-grid">
+
+        <div class="kpi-card">
+            <span class="kpi-label">Total de Ônibus</span>
+            <span class="kpi-value" th:text="${totalOnibus}">0</span>
+            <span class="kpi-unit">cadastrados</span>
+        </div>
+
+        <div class="kpi-card" th:classappend="${totalAlertas > 0} ? 'danger' : 'ok'">
+            <span class="kpi-label">Alertas no Período</span>
+            <span class="kpi-value" th:text="${totalAlertas}">0</span>
+            <span class="kpi-unit" th:text="'últimos ' + ${diasSelecionado} + ' dias'">últimos 30 dias</span>
+        </div>
+
+        <div class="kpi-card">
+            <span class="kpi-label">Leituras no Período</span>
+            <span class="kpi-value" th:text="${totalLeituras}">0</span>
+            <span class="kpi-unit">registros coletados</span>
+        </div>
+
+        <div class="kpi-card" th:classappend="${leiturasAlerta > 0} ? 'danger' : 'ok'">
+            <span class="kpi-label">Acima do Limite</span>
+            <span class="kpi-value" th:text="${leiturasAlerta}">0</span>
+            <span class="kpi-unit">leituras &gt; 1000 ppm</span>
+        </div>
+
+        <div class="kpi-card">
+            <span class="kpi-label">CO₂ Médio</span>
+            <span class="kpi-value" th:text="${co2Medio}">0.0</span>
+            <span class="kpi-unit">ppm no período</span>
+        </div>
+
+    </div>
+
+    <!-- ─── Download personalizado ───────────────────────────────────── -->
+    <div class="table-card" style="margin-bottom:20px">
+        <div class="table-card-header">
+            <h3>⚙️ Download Personalizado</h3>
+        </div>
+        <div style="padding:20px 24px">
+            <form th:action="@{/relatorios/pdf}" method="get"
+                  style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+                <div style="display:flex;flex-direction:column;gap:4px">
+                    <label style="font-size:0.7rem;font-family:var(--font-mono);
+                                  text-transform:uppercase;letter-spacing:1px;color:var(--text-dim)">
+                        Período (dias)
+                    </label>
+                    <input type="number" name="dias" min="1" max="365"
+                           th:value="${diasSelecionado}"
+                           style="background:var(--bg-card2);border:1px solid var(--border);
+                                  border-radius:var(--radius);padding:8px 12px;color:var(--text);
+                                  font-family:var(--font-mono);font-size:0.85rem;width:120px"/>
+                </div>
+                <div style="margin-top:20px">
+                    <button type="submit" class="btn-primary">
+                        📋 Baixar PDF
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ─── Alertas do período ───────────────────────────────────────── -->
+    <div class="table-card" style="margin-bottom:20px">
+        <div class="table-card-header">
+            <h3>🚨 Alertas do Período</h3>
+            <span style="font-size:0.78rem;color:var(--text-dim)"
+                  th:text="${#lists.size(alertasPeriodo)} + ' registros'">0 registros</span>
+        </div>
+
+        <!-- Nenhum alerta -->
+        <div th:if="${#lists.isEmpty(alertasPeriodo)}"
+             style="padding:40px;text-align:center;color:var(--accent-green);font-size:0.88rem">
+            ✅ Nenhum alerta registrado no período.
+        </div>
+
+        <!-- Tabela de alertas -->
+        <div th:if="${not #lists.isEmpty(alertasPeriodo)}" style="overflow-x:auto">
+            <table class="data-table">
+                <thead>
+                <tr>
+                    <th>Data / Hora</th>
+                    <th>Placa</th>
+                    <th>Severidade</th>
+                    <th>CO₂ Medido</th>
+                    <th>Mensagem</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="a : ${alertasPeriodo}">
+                    <td class="font-mono"
+                        th:text="${#temporals.format(a.dataHora, 'dd/MM/yyyy HH:mm:ss')}">—</td>
+                    <td class="font-mono"
+                        th:text="${a.onibus != null} ? ${a.onibus.placa} : '—'">—</td>
+                    <td>
+                        <span class="status-badge"
+                              th:classappend="${a.severidade != null and a.severidade.name() == 'CRITICAL'} ? 'badge-offline' :
+                                             (${a.severidade != null and a.severidade.name() == 'HIGH'} ? 'badge-offline' :
+                                             (${a.severidade != null and a.severidade.name() == 'MEDIUM'} ? 'badge-maintenance' : 'badge-online'))"
+                              th:text="${a.severidade != null} ? ${a.severidade.name()} : '—'">—</span>
+                    </td>
+                    <td class="font-mono text-danger"
+                        th:text="${a.valorMedido != null} ? ${#numbers.formatDecimal(a.valorMedido, 1, 1)} + ' ppm' : '—'">—</td>
+                    <td style="font-size:0.8rem;color:var(--text-muted)"
+                        th:text="${a.mensagem != null} ? ${a.mensagem} : '—'">—</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ─── Leituras do período ──────────────────────────────────────── -->
+    <div class="table-card">
+        <div class="table-card-header">
+            <h3>📋 Histórico de Leituras de CO₂</h3>
+            <span style="font-size:0.78rem;color:var(--text-dim)"
+                  th:text="${#lists.size(leituras)} + ' registros'">0 registros</span>
+        </div>
+
+        <!-- Nenhuma leitura -->
+        <div th:if="${#lists.isEmpty(leituras)}"
+             style="padding:40px;text-align:center;color:var(--text-dim);font-size:0.88rem">
+            Nenhuma leitura registrada no período.
+            <a th:href="@{/leituras/nova}" style="color:var(--accent-green);margin-left:4px">
+                Registrar leitura
+            </a>.
+        </div>
+
+        <!-- Tabela de leituras -->
+        <div th:if="${not #lists.isEmpty(leituras)}" style="overflow-x:auto">
+            <table class="data-table">
+                <thead>
+                <tr>
+                    <th>Data / Hora</th>
+                    <th>Placa</th>
+                    <th>Terminal</th>
+                    <th>CO₂ (ppm)</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="l : ${leituras}">
+                    <td class="font-mono"
+                        th:text="${#temporals.format(l.dataHora, 'dd/MM/yyyy HH:mm:ss')}">—</td>
+                    <td class="font-mono"
+                        th:text="${l.onibus != null} ? ${l.onibus.placa} : '—'">—</td>
+                    <td th:text="${l.onibus != null and l.onibus.terminal != null}
+                                  ? ${l.onibus.terminal.nome} : '—'">—</td>
+                    <td class="font-mono"
+                        th:text="${l.co2Medido != null} ? ${#numbers.formatDecimal(l.co2Medido, 1, 2)} : '—'"
+                        th:classappend="${l.co2Medido != null and l.co2Medido > 1000} ? 'text-danger' : ''">—</td>
+                    <td>
+                        <span th:if="${l.co2Medido != null and l.co2Medido > 1000}"
+                              class="alert-badge badge-danger">⚠ Acima do limite</span>
+                        <span th:if="${l.co2Medido == null or l.co2Medido <= 1000}"
+                              class="alert-badge badge-ok">✓ Normal</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Filtro rápido por período ───────────────── -->
+    <div style="margin-top:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+        <span style="font-size:0.78rem;color:var(--text-dim);font-family:var(--font-mono)">
+            Filtrar visualização:
+        </span>
+        <a th:href="@{/relatorios(dias=7)}"
+           class="btn-outline" style="font-size:0.78rem"
+           th:classappend="${diasSelecionado == 7} ? ' active-filter' : ''">7 dias</a>
+        <a th:href="@{/relatorios(dias=30)}"
+           class="btn-outline" style="font-size:0.78rem"
+           th:classappend="${diasSelecionado == 30} ? ' active-filter' : ''">30 dias</a>
+        <a th:href="@{/relatorios(dias=90)}"
+           class="btn-outline" style="font-size:0.78rem"
+           th:classappend="${diasSelecionado == 90} ? ' active-filter' : ''">90 dias</a>
+        <a th:href="@{/relatorios(dias=365)}"
+           class="btn-outline" style="font-size:0.78rem"
+           th:classappend="${diasSelecionado == 365} ? ' active-filter' : ''">1 ano</a>
+        <a th:href="@{/dashboard}" class="btn-outline" style="font-size:0.78rem;margin-left:auto">
+            ← Dashboard
+        </a>
+    </div>
+
+</th:block>
+
+<th:block th:fragment="scriptsExtra">
+    <style>
+        .active-filter {
+            border-color: var(--accent-green) !important;
+            color: var(--accent-green) !important;
+        }
+    </style>
+</th:block>
+
+</body>
+</html>

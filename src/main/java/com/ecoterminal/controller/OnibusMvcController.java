@@ -17,16 +17,15 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
 @Controller
 @RequiredArgsConstructor
 public class OnibusMvcController {
 
-    private final OnibusRepository    onibusRepository;
+    private final OnibusRepository onibusRepository;
     private final TerminalRepository  terminalRepository;
     private final LeituraCO2Repository leituraRepository;
 
-    // ── Lista de ônibus ──────────────────────────────────────────────────────
+    // ── Lista de ônibus ─────────
     @GetMapping("/onibus")
     public String listar(@RequestParam(required = false) Long terminalId, Model model) {
         List<Onibus> lista = (terminalId != null)
@@ -43,7 +42,7 @@ public class OnibusMvcController {
         return "onibus";
     }
 
-    // ── Detalhe de um ônibus ─────────────────────────────────────────────────
+    // ── Detalhe de um ônibus ─────
     @GetMapping("/onibus/{id}")
     public String detalhe(@PathVariable Long id, Model model) {
         Onibus onibus = onibusRepository.findById(id)
@@ -58,7 +57,7 @@ public class OnibusMvcController {
         return "onibus-detail";
     }
 
-    // ── Formulário novo ônibus ───────────────────────────────────────────────
+    // ── Formulário novo ônibus ───────
     @GetMapping("/onibus/novo")
     public String novoForm(Model model) {
         model.addAttribute("onibus",      new Onibus());
@@ -69,7 +68,7 @@ public class OnibusMvcController {
         return "onibus-form";
     }
 
-    // ── Salvar novo ônibus ───────────────────────────────────────────────────
+    // ── Salvar novo ônibus ───────
     @PostMapping("/onibus/novo")
     public String salvar(@ModelAttribute Onibus onibus,
                          @RequestParam Long terminalId,
@@ -82,7 +81,7 @@ public class OnibusMvcController {
         return "redirect:/onibus";
     }
 
-    // ── Formulário editar ────────────────────────────────────────────────────
+    // ── Formulário editar ──────
     @GetMapping("/onibus/editar/{id}")
     public String editarForm(@PathVariable Long id, Model model) {
         Onibus onibus = onibusRepository.findById(id)
@@ -95,7 +94,7 @@ public class OnibusMvcController {
         return "onibus-form";
     }
 
-    // ── Salvar edição ────────────────────────────────────────────────────────
+    // ── Salvar edição ─────
     @PostMapping("/onibus/editar/{id}")
     public String salvarEdicao(@PathVariable Long id,
                                @ModelAttribute Onibus dados,
@@ -120,7 +119,7 @@ public class OnibusMvcController {
         return "redirect:/onibus";
     }
 
-    // ── Excluir ──────────────────────────────────────────────────────────────
+    // ── Excluir ────
     @PostMapping("/onibus/excluir/{id}")
     public String excluir(@PathVariable Long id, RedirectAttributes ra) {
         onibusRepository.deleteById(id);

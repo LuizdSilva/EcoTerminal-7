@@ -18,7 +18,7 @@ public class UsuarioService implements UserDetailsService {
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder   passwordEncoder;
 
-    // ── Spring Security — carrega usuário pelo e-mail ─────────────────────────
+    // ── Spring Security — carrega usuário pelo e-mail ─────
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -27,7 +27,7 @@ public class UsuarioService implements UserDetailsService {
                         "Usuário não encontrado com e-mail: " + email));
     }
 
-    // ── Cadastro ──────────────────────────────────────────────────────────────
+    // ── Cadastro ───
     @Transactional
     public void cadastrar(CadastroDTO dto) {
         if (usuarioRepository.existsByEmail(dto.email())) {
@@ -48,7 +48,7 @@ public class UsuarioService implements UserDetailsService {
         usuarioRepository.save(usuario);
     }
 
-    // ── Verifica se já existe algum usuário (primeiro acesso) ─────────────────
+    // ── Verifica se já existe algum usuário (primeiro acesso) ───
     @Transactional(readOnly = true)
     public boolean existeAlgumUsuario() {
         return usuarioRepository.count() > 0;

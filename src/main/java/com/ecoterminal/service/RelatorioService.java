@@ -12,11 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- * Agrega e expõe dados de emissões para o dashboard e relatório anual.
- *
- * Obrigação legal: relatório anual por ônibus — Lei Municipal 16.802/2018.
- */
 @Service
 @Transactional(readOnly = true)
 public class RelatorioService {
@@ -36,12 +31,12 @@ public class RelatorioService {
         this.conformidadeService  = conformidadeService;
     }
 
-    // ─── Dashboard ───────────────────────────────────────────────────────────
+    // ─── Dashboard ───
 
     /**
      * Resumo do terminal para o dashboard principal.
      *
-     * @param terminalId ID do terminal
+     * @param terminalId ID do termina
      * @param ano        ano de referência
      * @return {@link DashboardResumo} com totais e percentual de redução
      */
@@ -148,11 +143,8 @@ public class RelatorioService {
                 ));
     }
 
-    // ─── Record de resumo ─────────────────────────────────────────────────────
+    // ─── Record de resumo ────
 
-    /**
-     * Resumo do terminal para exibição no dashboard.
-     */
     public record DashboardResumo(
             Long   terminalId,
             int    ano,

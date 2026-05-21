@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-
 @Service
 @Transactional
 public class OnibusService {
@@ -25,7 +24,7 @@ public class OnibusService {
         this.terminalRepository = terminalRepository;
     }
 
-    // ─── Leitura ─────────────────────────────────────────────────────────────
+    // ─── Leitura ─────
 
     @Transactional(readOnly = true)
     public List<OnibusDTO> listarTodos() {
@@ -56,7 +55,7 @@ public class OnibusService {
                         HttpStatus.NOT_FOUND, "Ônibus não encontrado: " + prefixo));
     }
 
-    // ─── Escrita ──────────────────────────────────────────────────────────────
+    // ─── Escrita ─────
 
     public OnibusDTO cadastrar(OnibusDTO dto) {
         validarPrefixoUnico(dto.getPrefixo(), null);
@@ -80,7 +79,6 @@ public class OnibusService {
     public OnibusDTO atualizar(Long id, OnibusDTO dto) {
         Onibus onibus = buscarEntidade(id);
 
-        // Só valida unicidade de prefixo se ele foi alterado
         if (!onibus.getPrefixo().equals(dto.getPrefixo())) {
             validarPrefixoUnico(dto.getPrefixo(), id);
         }
@@ -107,12 +105,7 @@ public class OnibusService {
         onibusRepository.deleteById(id);
     }
 
-    // ─── Helpers (package-visible para uso interno entre services) ────────────
-
-    /**
-     * Retorna a entidade gerenciada pelo JPA.
-     * Outros services devem usar este método em vez de injetar OnibusRepository diretamente.
-     */
+    // ─── Helpers (package-visible para uso interno entre services) ───────
     @Transactional(readOnly = true)
     public Onibus buscarEntidade(Long id) {
         return onibusRepository.findById(id)
@@ -123,7 +116,7 @@ public class OnibusService {
     public List<Onibus> buscarEntidadesPorTerminal(Long terminalId) {
         return onibusRepository.findByTerminalId(terminalId);
 }
-    // ─── Privados ─────────────────────────────────────────────────────────────
+    // ─── Privados ─────
 
     private Terminal buscarTerminal(Long terminalId) {
         return terminalRepository.findById(terminalId)

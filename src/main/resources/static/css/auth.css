@@ -1,10 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════════
-   EcoTerminal — auth.css
    Estilo das páginas de Login e Cadastro
-   Arquivo: src/main/resources/static/css/auth.css
    ═══════════════════════════════════════════════════════════════════ */
-
-/* ── Reset e base ─────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {

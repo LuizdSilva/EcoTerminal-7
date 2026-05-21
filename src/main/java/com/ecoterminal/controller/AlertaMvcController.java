@@ -10,14 +10,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Comparator;
 import java.util.List;
-
 @Controller
 @RequiredArgsConstructor
 public class AlertaMvcController {
 
     private final AlertaEmissaoRepository alertaRepository;
 
-    // ── Lista de alertas não reconhecidos ────────────────────────────────────
+    // ── Lista de alertas não reconhecidos ──────
     @GetMapping("/alertas")
     public String listar(Model model) {
         List<AlertaEmissao> alerts = alertaRepository.findAll().stream()
@@ -31,7 +30,7 @@ public class AlertaMvcController {
         return "alerts";
     }
 
-    // ── Reconhecer alerta ────────────────────────────────────────────────────
+    // ── Reconhecer alerta ────────
     @PostMapping("/alertas/{id}/reconhecer")
     public String reconhecer(@PathVariable Long id, RedirectAttributes ra) {
         alertaRepository.findById(id).ifPresent(a -> {

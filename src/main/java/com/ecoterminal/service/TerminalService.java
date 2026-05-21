@@ -19,7 +19,7 @@ public class TerminalService {
         this.terminalRepository = terminalRepository;
     }
 
-    // ─── Leitura ─────────────────────────────────────────────────────────────
+    // ─── Leitura ────
 
     @Transactional(readOnly = true)
     public List<Terminal> listarTodos() {
@@ -33,7 +33,7 @@ public class TerminalService {
                         HttpStatus.NOT_FOUND, "Terminal não encontrado: " + id));
     }
 
-    // ─── Escrita ──────────────────────────────────────────────────────────────
+    // ─── Escrita ───
 
     public Terminal cadastrar(Terminal terminal) {
         if (terminalRepository.existsByCodigo(terminal.getCodigo())) {

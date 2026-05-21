@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.Year;
 import java.util.List;
-
 @RestController
 @RequestMapping("/api/onibus")
 @CrossOrigin(origins = "*")
@@ -26,54 +25,41 @@ public class OnibusController {
         this.emissaoCalculoService = emissaoCalculoService;
     }
 
-    // ── CRUD ──────────────────────────────────────────────────────────────────
+    // ── CRUD ────
 
     @GetMapping
     public ResponseEntity<List<OnibusDTO>> listarTodos() {
         return ResponseEntity.ok(onibusService.listarTodos());
     }
-
     @GetMapping("/{id}")
     public ResponseEntity<OnibusDTO> buscarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(onibusService.buscarPorId(id));
     }
-
     @GetMapping("/prefixo/{prefixo}")
     public ResponseEntity<OnibusDTO> buscarPorPrefixo(@PathVariable String prefixo) {
         return ResponseEntity.ok(onibusService.buscarPorPrefixo(prefixo));
     }
-
     @GetMapping("/terminal/{terminalId}")
     public ResponseEntity<List<OnibusDTO>> listarPorTerminal(@PathVariable Long terminalId) {
         return ResponseEntity.ok(onibusService.listarPorTerminal(terminalId));
     }
-
     @PostMapping
     public ResponseEntity<OnibusDTO> cadastrar(@Valid @RequestBody OnibusDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(onibusService.cadastrar(dto));
     }
-
     @PutMapping("/{id}")
     public ResponseEntity<OnibusDTO> atualizar(
             @PathVariable Long id,
             @Valid @RequestBody OnibusDTO dto) {
         return ResponseEntity.ok(onibusService.atualizar(id, dto));
     }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         onibusService.deletar(id);
         return ResponseEntity.noContent().build();
     }
 
-    // ── Emissões ──────────────────────────────────────────────────────────────
-
-    /**
-     * Calcula emissões do ônibus sem persistir (útil para simulações e preview).
-     *
-     * @param id  ID do ônibus
-     * @param ano ano de referência; 0 = ano corrente
-     */
+    // ── Emissões ────
     @GetMapping("/{id}/emissao")
     public ResponseEntity<EmissaoCO2> calcularEmissao(
             @PathVariable Long id,
@@ -82,13 +68,6 @@ public class OnibusController {
         return ResponseEntity.ok(
                 emissaoCalculoService.calcular(onibusService.buscarEntidade(id), anoCalculo));
     }
-
-    /**
-     * Calcula e persiste as emissões do ônibus.
-     *
-     * @param id  ID do ônibus
-     * @param ano ano de referência; 0 = ano corrente
-     */
     @PostMapping("/{id}/emissao")
     public ResponseEntity<EmissaoCO2> calcularEPersistirEmissao(
             @PathVariable Long id,
@@ -98,14 +77,6 @@ public class OnibusController {
                 .body(emissaoCalculoService.calcularEPersistir(
                         onibusService.buscarEntidade(id), anoCalculo));
     }
-
-    /**
-     * Calcula emissões de todos os ônibus de um terminal sem persistir.
-     * Busca as entidades diretamente — sem dupla consulta ao banco.
-     *
-     * @param terminalId ID do terminal
-     * @param ano        ano de referência; 0 = ano corrente
-     */
  @GetMapping("/terminal/{terminalId}/emissao")
 public ResponseEntity<List<EmissaoCO2>> calcularEmissaoTerminal(
         @PathVariable Long terminalId,
@@ -120,7 +91,7 @@ public ResponseEntity<List<EmissaoCO2>> calcularEmissaoTerminal(
     return ResponseEntity.ok(resultados);
 }
 
-    // ── Helper ────────────────────────────────────────────────────────────────
+    // ── Helper ────
 
     private static int resolverAno(int ano) {
         return (ano == 0) ? Year.now().getValue() : ano;

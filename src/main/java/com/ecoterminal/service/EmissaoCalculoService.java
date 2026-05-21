@@ -13,28 +13,10 @@ import java.time.LocalDate;
 import java.util.EnumMap;
 import java.util.Map;
 
-/**
- * Serviço central de cálculo de emissões.
- *
- * Implementa as equações do modelo ICCT 2019 (Seção 3.8):
- *
- *   CO2 (t/ano) = EC_be  × EF_CO2_f  × VKT  × 10⁻⁹
- *   MP  (t/ano) = EF_MP  × VKT × 10⁻⁶
- *   NOx (t/ano) = EF_NOx × VKT × 10⁻⁶
- *
- * Fontes das constantes:
- *   - Consumo energético : SPTrans 2017 (dados reais de operação)
- *   - EF_MP e EF_NOx     : MMA 2011 — 1° Inventário Nacional
- *   - EF_CO2             : ICCT/ANL GREET (escapamento, não ciclo de vida)
- *   - Euro VI (P8)       : HBEFA 3.3 (2017)
- */
 @Service
 public class EmissaoCalculoService {
 
-    // ═══════════════════════════════════════════════════════════════════════
-    // CONSTANTES — CONSUMO ENERGÉTICO (kWh/km) — fonte: SPTrans 2017
-    // 1 L diesel S10 ≈ 10,0 kWh/L (DOE / Alternative Fuels Data Center)
-    // ═══════════════════════════════════════════════════════════════════════
+    // CONSTANTES — CONSUMO ENERGÉTICO (kWh/km) — fonte: SPTrans 2017   
 
     private static final Map<TipoOnibus, Double> EC_SEM_AC = new EnumMap<>(TipoOnibus.class);
     private static final Map<TipoOnibus, Double> AC_DELTA  = new EnumMap<>(TipoOnibus.class);
@@ -61,9 +43,7 @@ public class EmissaoCalculoService {
         AC_DELTA.put(TipoOnibus.TROLEBUS,       0.0);
     }
 
-    // ═══════════════════════════════════════════════════════════════════════
     // CONSTANTES — EF_NOx (g/km) — fonte: MMA 2011 / HBEFA 3.3
-    // ═══════════════════════════════════════════════════════════════════════
 
     private static final Map<TipoOnibus, Map<PadraoMotor, Double>> EF_NOX = new EnumMap<>(TipoOnibus.class);
 
@@ -79,9 +59,7 @@ public class EmissaoCalculoService {
         EF_NOX.put(TipoOnibus.TROLEBUS,       efNoxMap(0.0,  0.0,  0.0));
     }
 
-    // ═══════════════════════════════════════════════════════════════════════
     // CONSTANTES — EF_MP (g/km) — fonte: MMA 2011 / HBEFA 3.3
-    // ═══════════════════════════════════════════════════════════════════════
 
     private static final Map<TipoOnibus, Map<PadraoMotor, Double>> EF_MP = new EnumMap<>(TipoOnibus.class);
 
@@ -97,17 +75,12 @@ public class EmissaoCalculoService {
         EF_MP.put(TipoOnibus.TROLEBUS,       efMpMap(0.0,   0.0,   0.0));
     }
 
-    // ─── Dependência ──────────────────────────────────────────────────────────
-
+    // ─── Dependência ─────
     private final EmissaoCO2Repository emissaoCO2Repository;
 
     public EmissaoCalculoService(EmissaoCO2Repository emissaoCO2Repository) {
         this.emissaoCO2Repository = emissaoCO2Repository;
     }
-
-    // ═══════════════════════════════════════════════════════════════════════
-    // API PÚBLICA
-    // ═══════════════════════════════════════════════════════════════════════
 
     /**
      * Calcula e persiste as emissões anuais de um ônibus para o ano informado.
@@ -132,16 +105,16 @@ public class EmissaoCalculoService {
      * @return entidade {@link EmissaoCO2} não gerenciada (transiente)
      */
     public EmissaoCO2 calcular(Onibus onibus, int ano) {
-        double ec    = getConsumoEnergia(onibus);         // kWh/km
-        double vkt   = onibus.getKmAnuais();              // km/ano
-        double efCo2 = getEfCo2(onibus.getCombustivel()); // g/kWh
-        double efMp  = getEfMp(onibus);                   // g/km
-        double efNox = getEfNox(onibus);                  // g/km
+        double ec    = getConsumoEnergia(onibus);         
+        double vkt   = onibus.getKmAnuais();              
+        double efCo2 = getEfCo2(onibus.getCombustivel()); 
+        double efMp  = getEfMp(onibus);                   
+        double efNox = getEfNox(onibus);                  
 
         // Equações ICCT 2019 — Seção 3.8
-        double co2Ton = ec * efCo2 * vkt * 1e-9;  // toneladas CO2/ano
-        double mpTon  = efMp * vkt * 1e-6;         // toneladas MP/ano
-        double noxTon = efNox * vkt * 1e-6;        // toneladas NOx/ano
+        double co2Ton = ec * efCo2 * vkt * 1e-9;  
+        double mpTon  = efMp * vkt * 1e-6;        
+        double noxTon = efNox * vkt * 1e-6;        
 
         return new EmissaoCO2(
                 onibus, ano, LocalDate.now(),
@@ -149,15 +122,6 @@ public class EmissaoCalculoService {
                 vkt, ec, efCo2, efMp, efNox
         );
     }
-
-    // ═══════════════════════════════════════════════════════════════════════
-    // FATORES — acesso direto para testes e simulações
-    // ═══════════════════════════════════════════════════════════════════════
-
-    /**
-     * Consumo energético efetivo do ônibus (kWh/km).
-     * Inclui delta de AC quando {@code temArCondicionado == true}.
-     */
     public double getConsumoEnergia(Onibus onibus) {
         double base  = EC_SEM_AC.getOrDefault(onibus.getTipo(), 5.5);
         double delta = onibus.isTemArCondicionado()
@@ -185,11 +149,7 @@ public class EmissaoCalculoService {
                 .getOrDefault(onibus.getPadraoMotor(), 0.0);
     }
 
-    // ═══════════════════════════════════════════════════════════════════════
     // HELPERS DE INICIALIZAÇÃO DOS MAPAS
-    // ═══════════════════════════════════════════════════════════════════════
-
-    /** Cria mapa NOx para os 4 padrões de motor a partir dos 3 valores com combustão. */
     private static Map<PadraoMotor, Double> efNoxMap(double p5, double p7, double p8) {
         Map<PadraoMotor, Double> m = new EnumMap<>(PadraoMotor.class);
         m.put(PadraoMotor.P5_EURO_III, p5);
@@ -198,8 +158,6 @@ public class EmissaoCalculoService {
         m.put(PadraoMotor.ELETRICO,    0.0);
         return m;
     }
-
-    /** Cria mapa MP para os 4 padrões de motor a partir dos 3 valores com combustão. */
     private static Map<PadraoMotor, Double> efMpMap(double p5, double p7, double p8) {
         Map<PadraoMotor, Double> m = new EnumMap<>(PadraoMotor.class);
         m.put(PadraoMotor.P5_EURO_III, p5);

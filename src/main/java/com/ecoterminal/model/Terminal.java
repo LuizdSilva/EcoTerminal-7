@@ -3,7 +3,6 @@ package com.ecoterminal.model;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-
 @Entity
 @Table(name = "terminal")
 public class Terminal {
@@ -46,21 +45,33 @@ public class Terminal {
         o.setTerminal(null);
     }
 
-    public Long getId()                        { return id; }
-    public void setId(Long id)                 { this.id = id; }
+    public Long getId(){
+         return id; }
+    public void setId(Long id){ 
+        this.id = id; }
 
-    public String getNome()                    { return nome; }
-    public void setNome(String nome)           { this.nome = nome; }
+    public String getNome(){ 
+        return nome; }
+    public void setNome(String nome){
+         this.nome = nome; }
 
-    public String getCodigo()                  { return codigo; }
-    public void setCodigo(String codigo)       { this.codigo = codigo; }
+    public String getCodigo(){
+         return codigo; }
+    public void setCodigo(String codigo){
+         this.codigo = codigo; }
 
-    public String getCidade()                  { return cidade; }
-    public void setCidade(String cidade)       { this.cidade = cidade; }
+    public String getCidade(){
+        return cidade; }
+    public void setCidade(String cidade){ 
+        this.cidade = cidade; }
 
-    public String getEstado()                  { return estado; }
-    public void setEstado(String estado)       { this.estado = estado; }
+    public String getEstado(){ 
+        return estado; }
+    public void setEstado(String estado){ 
+        this.estado = estado; }
 
-    public List<Onibus> getOnibus()            { return onibus; }
-    public void setOnibus(List<Onibus> onibus) { this.onibus = onibus; }
+    public List<Onibus> getOnibus(){ 
+        return onibus; }
+    public void setOnibus(List<Onibus> onibus){
+         this.onibus = onibus; }
 }

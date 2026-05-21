@@ -1,6 +1,5 @@
 package com.ecoterminal.enums;
 
-
 public enum TipoOnibus {
 
     MINIBUS("Miniônibus 8,4–9,0m"),
